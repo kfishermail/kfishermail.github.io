@@ -9,8 +9,16 @@
             overflow: hidden; /* Hide scrollbars */
         }
 
-        button {
+        .debug {
             visibility: hidden;
+            border-radius: 4px;
+            width: 150px;
+        }
+
+        button {
+            /*visibility: hidden;*/
+            border-radius: 4px;
+            width: 150px;
         }
 
         .previewClass {
@@ -21,8 +29,13 @@
             visibility: hidden;
         }
 
+        #mainBody {
+            background-image: linear-gradient(to bottom right, red, yellow);
+        }
 
-
+        #dialog {
+            background-image: linear-gradient(to bottom right, red, yellow);
+        }
 
 
         .outMessages {
@@ -33,11 +46,11 @@
             margin: 0px;
             padding: 0px;
             position: absolute;
-            /*
-            top: 10%;
-            left: 10%;
-            width: 30%;
-            height: 30%;*/
+            /*     top: 10%;
+                    left: 10%;
+                    width: 30%;
+                    height: 30%;
+        */
             top: 0px;
             left: 0px;
             width: 100%;
@@ -61,13 +74,13 @@
         }
 
         /*     .imgClass {
-                    margin: 0px;
-                    padding: 0px;
-                    position: absolute;
-                    top: 200px;
-                    left: 750px;
-                    width: 200px;
-                }*/
+                            margin: 0px;
+                            padding: 0px;
+                            position: absolute;
+                            top: 200px;
+                            left: 750px;
+                            width: 200px;
+                        }*/
 
         #messages {
             background-color: yellow;
@@ -101,21 +114,34 @@
 
 
 
-    <title>Websockets Using JavaScript MQTT Client</title>
+    <title>Stock Viewer</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.js" type="text/javascript"></script>
-    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+
+
+
+    <!-- <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
+
+
+
+
     <script type="text/javascript">
         var mqtt;
         var reconnectTimeout = 2000;
-        //var MQTThost = "mqttbroker";
-             var MQTThost = "broker.hivemq.com";
+        var MQTThost = "mqttbroker";
+        //     var MQTThost = "broker.hivemq.com";
         var port = 8000;
         var row = 0;
 
         var FTPCounter = 100;
         var mqttFTP = null;
         var globalVolume = .8;
+        var userName = "WebViewer"
         // mqtt user name admin password admin
 
         /**
@@ -341,14 +367,14 @@
                 else ele['on' + type] = false;
             }
         }
-        function f1() {
-            kennyFisher("mqtt://scrn1.png", function (png) { //startSlideShow
-                if (png.length > 0) {
-                    var t = "data:image/png;base64," + arrayBufferToBase64(png)
-                    document.getElementById("ItemPreview").src = t;
-                    fadeNextImage(t);
-                }
-            });
+        function f7() {
+            //kennyFisher("mqtt://scrn1.png", function (png) { //startSlideShow
+            //    if (png.length > 0) {
+            //        var t = "data:image/png;base64," + arrayBufferToBase64(png)
+            //        document.getElementById("ItemPreview").src = t;
+            //        fadeNextImage(t);
+            //    }
+            //});
         }
 
         var loudClick = new Audio("data:audio/mpeg;base64,SUQzAwAAAAAAJVRQRTEAAAAbAAAAU291bmRKYXkuY29tIFNvdW5kIEVmZmVjdHP / +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");
@@ -360,8 +386,9 @@
         }
 
         function f1() {
+            SlideShowMode = false;
             playSoftClick();
-            kennyFisher("mqtt://scrn1.png", function (png) { //startSlideShow
+            kennyFisher("mqtt://scrn1.png", function (png) {
                 if (png.length > 0) {
                     var t = "data:image/png;base64," + arrayBufferToBase64(png)
                     document.getElementById("ItemPreview").src = t;
@@ -370,8 +397,9 @@
             });
         }
         function f2() {
+            SlideShowMode = false;
             playSoftClick();
-            kennyFisher("mqtt://scrn2.png", function (png) { //startSlideShow
+            kennyFisher("mqtt://scrn2.png", function (png) {
                 if (png.length > 0) {
                     var t = "data:image/png;base64," + arrayBufferToBase64(png)
                     document.getElementById("ItemPreview").src = t;
@@ -380,8 +408,9 @@
             });
         }
         function f3() {
+            SlideShowMode = false;
             playSoftClick();
-            kennyFisher("mqtt://scrn3.png", function (png) { //startSlideShow
+            kennyFisher("mqtt://scrn3.png", function (png) {
                 if (png.length > 0) {
                     var t = "data:image/png;base64," + arrayBufferToBase64(png)
                     document.getElementById("ItemPreview").src = t;
@@ -390,8 +419,9 @@
             });
         }
         function f4() {
+            SlideShowMode = false;
             playSoftClick();
-            kennyFisher("mqtt://scrn4.png", function (png) { //startSlideShow
+            kennyFisher("mqtt://scrn4.png", function (png) {
                 if (png.length > 0) {
                     var t = "data:image/png;base64," + arrayBufferToBase64(png)
                     document.getElementById("ItemPreview").src = t;
@@ -403,6 +433,7 @@
             sayString("Kenny Fisher Is A High Roller");
         }
         function f6() {
+            playSoftClick();
             KPFSendMessage("function", "say status");
         }
         function f9() {
@@ -421,6 +452,7 @@
         shortcut.add("F4", f4);
         shortcut.add("F5", f5);
         shortcut.add("F6", f6);
+        shortcut.add("F7", f7);
 
         shortcut.add("F9", f9);
         shortcut.add("F10", f10);
@@ -462,8 +494,7 @@
                         for (i = 0; i < voices.length; i++) {
                             if (voices[i].name === voiceName) {
                                 speech.voice = voices[i];
-
-                                displayToast(voiceName);
+                                //displayToast(voiceName);
                                 found = true;
                             }
                         }
@@ -546,7 +577,6 @@
 
 
         var MachineID = uuidv4();
-
         MachineID = MachineID.substring(0, 8);
 
         function uuidv4() {
@@ -581,7 +611,28 @@
             }
             return hval >>> 0;
         }
-        var UniqueID = hashFnv32a(navigator.userAgent, true, 0);
+
+        function getCookie(cname) {
+            var name = cname + "=";
+            var decodedCookie = decodeURIComponent(document.cookie);
+            var ca = decodedCookie.split(';');
+            for (var i = 0; i < ca.length; i++) {
+                var c = ca[i];
+                while (c.charAt(0) == ' ') {
+                    c = c.substring(1);
+                }
+                if (c.indexOf(name) == 0) {
+                    return c.substring(name.length, c.length);
+                }
+            }
+            return "";
+        }
+        var uName = getCookie("username");
+
+        var UniqueID = uName;;
+        if (UniqueID == null || UniqueID == "") {
+            var UniqueID = hashFnv32a(navigator.userAgent, true, 0);
+        }
         //SafeAddToListbox(UniqueID);
 
         var context = new (window.AudioContext || window.webkitAudioContext)();
@@ -631,8 +682,82 @@
         });
 
 
+        ////function displayDialog() {
+
+        ////    $("#dialog").dialog({
+        ////        autoOpen: false,
+        ////        show: {
+        ////            effect: "blind",
+        ////            duration: 1000
+        ////        },
+        ////        hide: {
+        ////            effect: "explode",
+        ////            duration: 1000
+        ////        }
+        ////    });
+
+        ////    //When the button in the form is clicked, take the input value and set that as the value of `.myTarget`
+        ////    $('.formSaver').on('click', function () {
+        ////        $('.myTarget').text($('.myInput').val());
+        ////        $("#dialog").dialog('close');
+        ////    });
+        ////    SafeAddToListbox("In displayDialog");
+        ////    //Open it when #opener is clicked
+        ////    //$("#opener").click(function () {
+        ////    //    $("#dialog").dialog("open");
+        ////    //});
+        ////    //MachineID;
 
 
+        function displayDialog() {
+
+            $("#dialog").dialog({
+                autoOpen: false,
+                width: "33%",
+                maxWidth: "768px",
+                show: {
+                    effect: "blind",
+                    duration: 1000
+                },
+                hide: {
+                    effect: "explode",
+                    duration: 1000
+                }
+            });
+
+            //When the button in the form is clicked, take the input value and set that as the value of `.myTarget`
+            ////$('.formSaver').on('click', function () {
+            ////    $('.myTarget').text($('.myInput').val());
+            ////    $("#dialog").dialog('close');
+            ////});
+            $('.myInput').on('change', function () {
+                UniqueID = $('.myInput').val();
+                document.cookie = "username=" + UniqueID + "; expires=Thu, 18 Dec 2023 12:00:00 UTC";
+            });
+            $('.myInput').val(UniqueID);
+            SafeAddToListbox("In displayDialog");
+            //Open it when #opener is clicked
+            //$("#opener").click(function () {
+            //    $("#dialog").dialog("open");
+            //});
+            $("#dialog").dialog("open");
+
+
+
+
+
+
+
+
+
+
+
+            $("#dialog").dialog("open");
+        }
+
+        window.addEventListener('dblclick', function (e) {
+            displayDialog();
+        });
 
 
         window.addEventListener('load', init, false);
@@ -754,6 +879,84 @@
         }
 
 
+
+        function ConnectmqttFtp() {
+            var clientID = "web" + new Date().getTime();
+            mqttFTP = new Paho.MQTT.Client(MQTThost, port, clientID);
+
+
+            // ------------------------
+            var dest = "";
+            mqttFTP.onMessageArrived = function (r_message) {
+                SafeAddToListbox("Got ftpresponse Message");
+                var subTopics = r_message.destinationName.split("/");
+                for (i = 0; i < callbackArray.length; i++) {
+                    if (callbackArray[i].response == r_message.destinationName) {
+                        SafeAddToListbox("Got Match");
+                        var tElement = callbackArray[i];
+                        callbackArray.splice(i, 1);
+                        var bytes = r_message.payloadBytes
+                        tElement.callback(bytes);
+                    }
+                }
+            }
+
+
+            //----------------------------------------
+
+
+
+
+
+
+            var connectOptions = {
+                timeout: 3,
+                cleanSession: true,
+                onSuccess: function (m) {
+                    SafeAddToListbox("mqttFTP - In Connect onSuccess: " + mqttFTP.isConnected());
+                    var suboptions = {
+                        qos: 1,
+                        onSuccess: function () {
+                            displayToast("Double-Click For Menu");
+                            kennyFisher("mqtt://scrn2.png", function (png) {
+                                if (png.length > 0) {
+                                    var t = "data:image/png;base64," + arrayBufferToBase64(png)
+                                    document.getElementById("ItemPreview").src = t;
+                                    fadeNextImage(t);
+                                }
+                            });
+                            SafeAddToListbox("mqttFTP - In Subscribe onSuccess 3 mqttFTP");
+                        }
+                    };
+                    //SafeAddToListbox("Subscribe To ftpresponse");
+                    mqttFTP.subscribe("ftpresponse/" + MachineID + "/#", suboptions);
+                },// onConnectedFTP,
+                onFailure: function (m) {
+                    //SafeAddToListbox("onFailure Error");
+                    //console.log("KPF Failure In FTP Connect")
+                },
+            };
+            try {
+                SafeAddToListbox("Starting Connect Process");
+                mqttFTP.onFailure = function () { alert("Error"); };
+
+
+                mqttFTP.onConnectionLost = function (eObj) {
+                    SafeAddToListbox("Lost Connection: " + eObj.errorMessage);
+                    setTimeout(ConnectmqttFtp, reconnectTimeout);
+                };
+                mqttFTP.onConnected = function () { alert("Connected"); };
+
+                mqttFTP.connect(connectOptions);
+            }
+            catch (err) {
+                SafeAddToListbox("ERROR" + err.message);
+                document.getElementById("out_messages").innerHTML = err.message;
+            }
+            //mqttFTP.connect(connectOptions);
+            ////console.log("Waiting For Connection");
+            SafeAddToListbox("Returning");
+        }
 
 
 
@@ -908,76 +1111,6 @@
             return uint8Array.buffer;
         }
 
-        function ConnectmqttFtp() {
-            var clientID = "web" + new Date().getTime();
-            mqttFTP = new Paho.MQTT.Client(MQTThost, port, clientID);
-
-
-            // ------------------------
-            var dest = "";
-            mqttFTP.onMessageArrived = function (r_message) {
-                SafeAddToListbox("Got ftpresponse Message");
-                var subTopics = r_message.destinationName.split("/");
-                for (i = 0; i < callbackArray.length; i++) {
-                    if (callbackArray[i].response == r_message.destinationName) {
-                        SafeAddToListbox("Got Match");
-                        var tElement = callbackArray[i];
-                        callbackArray.splice(i, 1);
-                        var bytes = r_message.payloadBytes
-                        tElement.callback(bytes);
-                    }
-                }
-            }
-
-
-            //----------------------------------------
-
-
-
-
-
-
-            var connectOptions = {
-                timeout: 3,
-                cleanSession: true,
-                onSuccess: function (m) {
-                    SafeAddToListbox("mqttFTP - In Connect onSuccess: " + mqttFTP.isConnected());
-                    var suboptions = {
-                        qos: 1,
-                        onSuccess: function () {
-                            SafeAddToListbox("mqttFTP - In Subscribe onSuccess 3 mqttFTP");
-                        }
-                    };
-                    //SafeAddToListbox("Subscribe To ftpresponse");
-                    mqttFTP.subscribe("ftpresponse/" + MachineID + "/#", suboptions);
-                },// onConnectedFTP,
-                onFailure: function (m) {
-                    //SafeAddToListbox("onFailure Error");
-                    //console.log("KPF Failure In FTP Connect")
-                },
-            };
-            try {
-                SafeAddToListbox("Starting Connect Process");
-                mqttFTP.onFailure = function () { alert("Error"); };
-
-
-                mqttFTP.onConnectionLost = function (eObj) {
-                    SafeAddToListbox("Lost Connection: " + eObj.errorMessage);
-                    setTimeout(ConnectmqttFtp, reconnectTimeout);
-                };
-                mqttFTP.onConnected = function () { alert("Connected"); };
-
-                mqttFTP.connect(connectOptions);
-            }
-            catch (err) {
-                SafeAddToListbox("ERROR" + err.message);
-                document.getElementById("out_messages").innerHTML = err.message;
-            }
-            //mqttFTP.connect(connectOptions);
-            ////console.log("Waiting For Connection");
-            SafeAddToListbox("Returning");
-        }
-
         // if mqtt specified, everything OK, send to mqttBroker
         // if http specified
         //    if running as a file:
@@ -1130,13 +1263,13 @@
             // ---------
         }
 
-
+        var SlideShowMode = false;
         //clearTimeout TimeoutReference
         var TimeoutReference = null;
         function startSlideShow(reset) {
+            SlideShowMode = true;
             if (reset) slideShowIndex = 0;
             if (TimeoutReference != null) {
-                //SafeAddToListbox("Clear Timeout ");
                 clearTimeout(TimeoutReference);
             }
             if (slideShowIndex >= SlideShowList.length) {
@@ -1144,10 +1277,7 @@
             }
 
             var fName = SlideShowList[slideShowIndex].URL;
-            //kennyFisher(fName);
-            //SafeAddToListbox("Get Image 1: " + fName);
-            // -----------
-            if (fName.startsWith("mqtt://")) {
+            if (true || fName.startsWith("mqtt://")) {
                 kennyFisher(fName, function (png) { //startSlideShow
                     if (png.length > 0) {
                         var t = "data:image/png;base64," + arrayBufferToBase64(png)
@@ -1156,35 +1286,34 @@
                     }
                 });
             }
-            // -----------
             slideShow();
         }
 
         function slideShow() {
-            TimeoutReference = setTimeout(function () {
-                slideShowIndex++;
-                if (slideShowIndex >= SlideShowList.length) {
-                    slideShowIndex = 0;
-                }
-                var fName = SlideShowList[slideShowIndex].URL;
-                //kennyFisher(fName);
-                //SafeAddToListbox("Get Image 2: " + fName);
-                // ---------
-                if (fName.startsWith("mqtt://")) {
-                    kennyFisher(fName, function (png) { //slideShow
-                        if (png.length > 0) {
-                            var t = "data:image/png;base64," + arrayBufferToBase64(png)
-                            fadeNextImage(t);
+            if (SlideShowMode) {
+                TimeoutReference = setTimeout(function () {
+                    if (SlideShowMode) {
+                        slideShowIndex++;
+                        if (slideShowIndex >= SlideShowList.length) {
+                            slideShowIndex = 0;
                         }
-                    });
-                }
-                else if (fName.startsWith("http://")) { // setting src to url
-                    fadeNextImage(fName);
-                }
-                // ----------------
-                //SafeAddToListbox("Restart slideShow");
-                slideShow();
-            }, SlideShowList[slideShowIndex].TimeSecs * 1000)
+                        var fName = SlideShowList[slideShowIndex].URL;
+                        if (fName.startsWith("mqtt://")) {
+                            kennyFisher(fName, function (png) { //slideShow
+                                if (png.length > 0) {
+                                    var t = "data:image/png;base64," + arrayBufferToBase64(png)
+                                    fadeNextImage(t);
+                                }
+                            });
+                        }
+                        else if (fName.startsWith("http://")) { // setting src to url
+                            fadeNextImage(fName);
+                        }
+                        // ----------------
+                        slideShow();
+                    }
+                }, SlideShowList[slideShowIndex].TimeSecs * 1000)
+            }
         }
 
         var ImageSwitcher1 = {}
@@ -1361,8 +1490,6 @@
                     }
                     startSlideShow(true);
                 }
-
-
                 else if (response.binary != null) {
                     var idata = response.binary;
                     if (idata.data != null) {
@@ -1538,38 +1665,57 @@
         function playDummy() {
             //playURL("dummy.mp3");
             //playURL("http://mqttbroker:81/sda1/dummy.mp3");
+            playSoftClick();
             playURL("d:\\dummy.mp3");
         }
-        function playMafia() {
+        function playCorona() {
+            playSoftClick();
             playURL("d:\\corona.mp3");
         }
         function volumeDown() {
+            playSoftClick();
             var vid = document.getElementById("myVideo");
-            //var v = vid.volume - 0.1;
-            //if (v < 0.0) v = 0.0;
-            //vid.volume = v;
-
             globalVolume = globalVolume - 0.1;
             if (globalVolume < 0.0) globalVolume = 0.0;
             audioVolume.gain.value = globalVolume;
             vid.volume = globalVolume;
-
-            //v = audioVolume.gain.value;
-            //var v = vid.volume - 0.1;
-            //if (v < 0.0) v = 0.0;
-            //audioVolume.gain.value = v;
         }
         function volumeUp() {
+            playSoftClick();
             var vid = document.getElementById("myVideo");
             globalVolume = globalVolume + 0.1;
             if (globalVolume > 1.0) globalVolume = 1.0;
             audioVolume.gain.value = globalVolume;
             vid.volume = globalVolume;
         }
+        function displaySlideshow() {
+            SafeAddToListbox("Start SlideShow");
+            playSoftClick();
+
+            SlideShowList = [];
+            var SSE = {}; SSE.URL = "mqtt://scrn1.png"; SSE.TimeSecs = 5;
+            SlideShowList.push(SSE);
+            var SSE = {}; SSE.URL = "mqtt://scrn2.png"; SSE.TimeSecs = 5;
+            SlideShowList.push(SSE);
+            var SSE = {}; SSE.URL = "mqtt://scrn3.png"; SSE.TimeSecs = 5;
+            SlideShowList.push(SSE);
+            var SSE = {};
+            SSE.URL = "mqtt://scrn4.png"; SSE.TimeSecs = 5;
+            SlideShowList.push(SSE);
+            startSlideShow(true);
+            //var vid = document.getElementById("myVideo");
+            // globalVolume = globalVolume + 0.1;
+            // if (globalVolume > 1.0) globalVolume = 1.0;
+            // audioVolume.gain.value = globalVolume;
+            // vid.volume = globalVolume;
+        }
         function stopAudio() {
+            playSoftClick();
             context.close();
             context = new (window.AudioContext || window.webkitAudioContext)();
             audioVolume = context.createGain();
+            //var x = document.cookie;
+            //displayToast(x);
         }
 
         function startConnect() {
@@ -1577,6 +1723,7 @@
         }
 
         function getMqttBinary() {
+            playSoftClick();
             SafeAddToListbox("In getMqttBinary onSuccess: " + mqttFTP.isConnected());
             //kpfConnect("mqttbroker", port, true);
             SafeAddToListbox("In getMqttBinary");
@@ -1589,6 +1736,7 @@
         }
 
         function displayConnections() {
+            playSoftClick();
             var oStr = "mqtt: ";
             if (mqtt.isConnected() == true) {
                 oStr += "Connected";
@@ -1611,56 +1759,118 @@
             SafeAddToListbox("Trying");
             var result = navigator.userAgent;
             SafeAddToListbox(result);
+            //document.cookie = "username=John Doe; expires=Thu, 18 Dec 2023 12:00:00 UTC";
         }
 
-        function exitProgram() {
-            SafeAddToListbox("Try to exit");
-            throw new Error("Stop script");
-            window.stop();
-            process.exit(1);
-            if (window.stop) {
-                window.stop();
-            }
-            fail;
-            throw new Error();
-            throw '';
+        function displaySpreadsheet() {
+
+            playSoftClick();
+
+            SlideShowList = [];
+            var SSE = {}; SSE.URL = "mqtt://scrn1.png"; SSE.TimeSecs = 60;
+            SlideShowList.push(SSE);
+            startSlideShow(true);
+
+
+
+            //SlideShowMode = false;
+            //playSoftClick();
+            //kennyFisher("mqtt://scrn1.png", function (png) { //startSlideShow
+            //    if (png.length > 0) {
+            //        var t = "data:image/png;base64," + arrayBufferToBase64(png)
+            //        document.getElementById("ItemPreview").src = t;
+            //        fadeNextImage(t);
+            //    }
+            //});
         }
-        function displayScrn1() {
-            kennyFisher("mqtt://scrn1.png", function (png) { //startSlideShow
-                if (png.length > 0) {
-                    var t = "data:image/png;base64," + arrayBufferToBase64(png)
-                    document.getElementById("ItemPreview").src = t;
-                    fadeNextImage(t);
-                }
-            });
+        function displayGauges() {
+            playSoftClick();
+            SlideShowList = [];
+            var SSE = {}; SSE.URL = "mqtt://scrn2.png"; SSE.TimeSecs = 60;
+            SlideShowList.push(SSE);
+            startSlideShow(true);
+
+            ////SlideShowMode = false;
+            ////playSoftClick();
+            ////kennyFisher("mqtt://scrn2.png", function (png) {
+            ////    if (png.length > 0) {
+            ////        var t = "data:image/png;base64," + arrayBufferToBase64(png)
+            ////        document.getElementById("ItemPreview").src = t;
+            ////        fadeNextImage(t);
+            ////    }
+            ////});
         }
-        function displayScrn2() {
-            kennyFisher("mqtt://scrn2.png", function (png) { //startSlideShow
-                if (png.length > 0) {
-                    var t = "data:image/png;base64," + arrayBufferToBase64(png)
-                    document.getElementById("ItemPreview").src = t;
-                    fadeNextImage(t);
-                }
-            });
+        function displayOverview() {
+            playSoftClick();
+            SlideShowList = [];
+            var SSE = {}; SSE.URL = "mqtt://scrn3.png"; SSE.TimeSecs = 60;
+            SlideShowList.push(SSE);
+            startSlideShow(true);
+
+
+            ////SlideShowMode = false;
+            ////playSoftClick();
+            ////kennyFisher("mqtt://scrn3.png", function (png) {
+            ////    if (png.length > 0) {
+            ////        var t = "data:image/png;base64," + arrayBufferToBase64(png)
+            ////        document.getElementById("ItemPreview").src = t;
+            ////        fadeNextImage(t);
+            ////    }
+            ////});
         }
+        function displayIndexes() {
+            playSoftClick();
+            SlideShowList = [];
+            var SSE = {}; SSE.URL = "mqtt://scrn4.png"; SSE.TimeSecs = 60;
+            SlideShowList.push(SSE);
+            startSlideShow(true);
+
+
+            ////SlideShowMode = false;
+            ////playSoftClick();
+            ////kennyFisher("mqtt://scrn4.png", function (png) { //startSlideShow
+            ////    if (png.length > 0) {
+            ////        var t = "data:image/png;base64," + arrayBufferToBase64(png)
+            ////        document.getElementById("ItemPreview").src = t;
+            ////        fadeNextImage(t);
+            ////    }
+            ////});
+        }
+        function sayCondition() {
+            playSoftClick();
+            KPFSendMessage("function", "say status");
+        }
+
     </script>
 </head>
 
-<body>
-    <h1><!--Websockets MQTT Monitor--></h1>
-    <button type="button" onclick="playDummy()">Play Dummy</button>
-    <button type="button" onclick="playMafia()">Play Mafia</button>
-    <button type="button" onclick="volumeUp()">Volume UP</button>
-    <button type="button" onclick="volumeDown()">Volume DOWN</button>
-    <button type="button" onclick="stopAudio()">Stop Audio</button>
-    <button type="button" onclick="startConnect()">Connect</button>
-    <button type="button" onclick="getMqttBinary()">Get MQTT Binary</button>
-    <button type="button" onclick="displayConnections()">Connections</button>
-    <button type="button" onclick="exitProgram()">Exit</button>
-    <button type="button" onclick="displayScrn1()">Scrn1</button>
-    <button type="button" onclick="displayScrn2()">Scrn2</button>
+<body id="mainBody">
+    <div id="buttons">
+        <h1><!--Stock Market MQTT Monitor--></h1>
+        <button type="button" class="debug" onclick="displaySpreadsheet()">Spreadsheet</button>
+        <button type="button" class="debug" onclick="displayGauges()">Gauges</button>
 
+        <button type="button" class="debug" onclick="displayOverview()">Overview</button>
+        <button type="button" class="debug" onclick="displayIndexes()">Indexes</button>
 
+        <button type="button" class="debug" onclick="playDummy()">Play Dummy</button>
+        <button type="button" class="debug" onclick="playCorona()">Play Corona</button>
+
+        <button type="button" class="debug" onclick="displaySlideshow()">Slideshow</button>
+        <button type="button" class="debug" onclick="stopAudio()">Stop Audio</button>
+
+        <button type="button" class="debug" onclick="volumeUp()">Volume UP</button>
+        <button type="button" class="debug" onclick="volumeDown()">Volume DOWN</button>
+
+        <button type="button" class="debug" onclick="sayCondition()">Say Condition</button>
+
+        <button type="button" class="debug" onclick="startConnect()">Connect</button>
+        <button type="button" class="debug" onclick="getMqttBinary()">Get MQTT Binary</button>
+        <button type="button" class="debug" onclick="displayConnections()">Connections</button>
+        <button type="button" class="debug" onclick="displayDialog()">Dialog</button>
+
+        <input type="checkbox" class="debug" value="Boat" />Ignore Remote Display Commands</input>
+    </div>
 
 
     <img id="ItemPreview" class="previewClass" src="" />
@@ -1673,20 +1883,58 @@
 
 
 
-    <div id='alrt' class="alertClass"></div>
+    <div id='alrt' class="alertClass" style="visibility:hidden"></div>
     <!--   <div id="status">Connection Status: Not Connected</div>-->
-    <video id="myVideo" width="320" height="240" controls=controls class="videoClass">
-        <!--<source src="Mafia.mp4" type="video/mp4" />-->
-        <source src="Sustitute2.mp4" type="video/mp4" />
-        <!--<source src="movie.ogg" type="video/ogg" />-->
-        Your browser does not support the video tag.
+    <!--<video id="myVideo" width="320" height="240" controls=controls class="videoClass">-->
+    <!--<source src="Mafia.mp4" type="video/mp4" />-->
+    <!--<source src="Sustitute2.mp4" type="video/mp4" />-->
+    <!--<source src="movie.ogg" type="video/ogg" />-->
+    <!--Your browser does not support the video tag.
     </video>
-    <br />
+    <br />-->
+    <!-- <div>Here is the rest of the page. Hopefully we can get the value from the dialog form?! Should display <span class="myTarget">here</span> when finished.</div>-->
+
+
+    <div id="dialog" title="Commands">
+
+        <p>Use Buttons To Control.</p>
+
+        <button type="button" onclick="displaySpreadsheet()">Spreadsheet</button>
+        <button type="button" onclick="displayGauges()">Gauges</button>
+
+        <button type="button" onclick="displayOverview()">Overview</button>
+        <button type="button" onclick="displayIndexes()">Indexes</button>
+
+        <button type="button" onclick="playDummy()">Play Dummy</button>
+        <button type="button" onclick="playCorona()">Play Corona</button>
+
+        <button type="button" onclick="displaySlideshow()">Slideshow</button>
+        <button type="button" onclick="stopAudio()">Stop Audio</button>
+
+        <button type="button" onclick="volumeUp()">Volume UP</button>
+        <button type="button" onclick="volumeDown()">Volume DOWN</button>
+
+        <button type="button" onclick="sayCondition()">Say Condition</button>
+
+        <!--    <button type="button" onclick="startConnect()">Connect</button>-->
+        <!--     <button type="button" onclick="getMqttBinary()">Get MQTT Binary</button>-->
+        <!--    <button type="button" onclick="displayConnections()">Connections</button>-->
+
+
+        <hr />
+        <input type="checkbox" />Ignore Remote Display Commands</input>
+        <hr />
+        Enter User Name (Optional)
+        <br />
+        <input id="idInput" class="myInput" type="text" />
+        <!--    <button class="formSaver">Save me!</button>-->
+    </div>
 
 
 
 
 
+    <!--  <button id="opener">Open Dialog</button>-->
     <!--<table>
         <tr>
             <td id="subscribe" width="300">
@@ -1720,7 +1968,7 @@
         $('#picOne').fadeOut(1500);
         $('#picTwo').fadeOut(1500);
 
-                                                                                                                           ////////////////        //var yyy = bytes.length;
+                                                                                                                                                                                                                                           ////////////////        //var yyy = bytes.length;
 
 
         /*
@@ -1777,7 +2025,7 @@
 
 
 
-                                                                                                                                                                    //	saySomething("Mu ha ha! Works now.");
+                                                                                                                                                                                                                                                                                    //	saySomething("Mu ha ha! Works now.");
 
 
 
