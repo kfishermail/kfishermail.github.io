@@ -7,8 +7,9 @@
     <style>
         body {
             overflow: hidden; /*new version Hide scrollbars    --------------- */
-            background: linear-gradient(to left top, blue, red) fixed;
+            /*background: linear-gradient(to left top, blue, red) fixed;*/
         }
+
         .debug {
             visibility: hidden;
             border-radius: 4px;
@@ -21,7 +22,7 @@
         }
 
 
-  /*      #mainBody {
+        /*      #mainBody {
             background-image: linear-gradient(to bottom right, red, yellow);
         }*/
 
@@ -124,6 +125,7 @@
 
     <script type="text/javascript">
         var mqtt;
+        var mqttFTP = null;
         var reconnectTimeout = 2000;
         //var MQTThost = "mqttbroker";
         //var MQTThost = "broker.hivemq.com";
@@ -137,9 +139,8 @@
         var row = 0;
         var ftpCounter = 100;
 
-        var mqttFTP = null;
         var globalVolume = .8;
-        var userName = "WebViewer"
+        //var userName = "WebViewer"
         // mqtt user name admin password admin
 
         /**
@@ -392,8 +393,13 @@
         var softClick = new Audio("data:audio/mpeg;base64,SUQzAwAAAAAAJVRQRTEAAAAbAAAAU291bmRKYXkuY29tIFNvdW5kIEVmZmVjdHP / +5QEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABJbmZvAAAADwAAAAYAAAqAACoqKioqKioqKioqKioqKipVVVVVVVVVVVVVVVVVVVVVVYCAgICAgICAgICAgICAgICqqqqqqqqqqqqqqqqqqqqqqtXV1dXV1dXV1dXV1dXV1dXV/////////////////////wAAADlMQU1FMy45OXIBqgAAAAAAAAAAFIAkBouGAACAAAAKgKwuw1kAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD/+5QEAAABfABG5QwgCDjBCJehjAAOCXc3OPiAAcKlJ7ce0ABskAAmUgC5xRQ4UBAEAQDET5nkwQd9YfBAEAQ/yjv5T/y7+CBz/Wf9YflAQp/y4fAEGAQSo78CAAAlCACIiCAQB8H4IAmD4Pg+8Tn/icPghy4f+UlHfKAgZ/y4Pv//+JwfD8oCBz/pB/7yjwTzgwwAIGV+5x2UI/DnfPyTgHDU6mcBbFCs2L5uINAJvmkBlhyIG21ZgaLCx8Qwg9P3Wm5whRCQToPf9dbymV5gThPf037KFaDIDvLjGBFP//KiDScQQJj///LpfNyKHjRnTV////oIJm6jShn7XGIzaLBabDYrAAAGAojnHlcBX5dvn6FiYME00xBFS5sdcZIDbUnYuIAZ4qgOtB5gaJg7xEDDujZpus3N0gv4ngcwb9XUumtzM3Y4ShErWhutN749DQ2Hoxcb//2ZaZKNLn//+dN0h6MeMzcCf/4P96qqWaCABSRBCAS0+lfIw8mRehT/+5QECQACozHXziUAAFZnuuXErAAK2GNP/MMAAWeTar+eUAAEX2i4jjykrsw12lu5DgUEEByjIYgG4fvTQQdI1/6/yOYuW//FDBcXtEdbylj/56PcCBgaI2BNsbiMPggXPsPbv/01SaaSSWv/6XKJiL9AHG4tU9c2WZ2caSzZt8okgkFIFjpUehAdZfbCUpUU1Fvs3/Fz+p/+aMNyWfOMX96isf/EsN32xlHHb4ulX8O4tXZnz5xM8eS936Hp6hlMyMAMgp5ACI9DkqicDw/hKL4hEFMIrMUJHY8kayW7ta876sxekj/eW+sVw7Bk6uajNR4RgKMkQFCVVr0Chs+QIhkyGnsYAhZHvUS6W+o8SvCmiWjJqYhTJSFWk73RXmiXVDSZHMX47z7UJcW1PH+rYTsouHmjzhpjOqI8REpWEWK1nh5kfKDKY3stf0MVBpExrGnWGEPvtUtyxKGnaypFOVddtQZd6DzY2eirslXfbpAgAIBANiYfA2DsEScRiWH/+5QECQACsjrQ4YYcQFUjin89gy4KlGVB57DKAVUMqHz2GCjKQG48VOYvsckZpaK+n9XqHLc4OiTHi6U6RRhiU1HlAlTQzLO//+/nkcM3m7RiNq7uXrwzY4Za0ig4kyxC8k/m3GUIW2bmoVVIjIMZUvJcdB/DiLmyi5MfDykEcQGPMEtuXWX98r+tA5JqUtHBmZ844Vy3CKDCD3teGc0KlqVT5cnAZF2fUl6xccFWC6WpJM2k88S6vLIXiQDJEUyEQCAABACpu2LiWRoGaX4WQxrKJMCkiFogmCnhgI0PMzVJXi0oQQIFJQPdkCTYfZgYIuIsyxYUlDYZJWjAJNm5UXKVS4d22PPGjaP7RT/O97nsaIlkIQAAASAXRFWEPQsDAZBuKADFQenTFTAGoSaiCXSsNIbq8laqgiXpFzNTK2k5MNA0dYIdcLHbS3GFwqgxJ2kLUHLQ3HRF3dxFTMeS/NOS06DW61V5eodUEiALbbvGgbABgsDh0cgC2EocAHD/+5QEDAACxxvR+YYTMFoHag88w3gKyPtH55hvAV4TqDz2DOiWHy44FC8kFkomiqoZOYsygW8SFclhYSughQu+iXSegmKqUYHBFYJiJQUabDbVB4ytwHaLJS/5pBhmRT/TSLJ+LI8zJmQAAARJTxgJQnZbgzBxEiLbkv0iFItngHNLdEsFw62x3hOuRaJwDZqGepMWgnuAT5NVIi/Mj+tOqRfdIDKTQ7D7zK8nN/zPCEVPJ2v63AHRq9DXyDR61tkVKs5kYCmkvBvn0pxaVWUSFOzcZZEXBb1+MsvECC2VsSc9v6afmlDm756jbO6kSkV8//JUvWhjDhSX9m6pIJ5tCL731z2JlQ50p+Pm43jzq7Bewu4SrUzJKZiAAULd5cxmNh4MwXgliLA4QYBzDwnqjW6xJAuOmWoDOmrBkqAw7NI/+KhPrWXsY/9coeTkSBSAH6y0PLUwSCc7UAXHhEw1pce+InuF1178tqzPWpra2ygQm0m4JIXscJiHgQJIGEr/+5QECYACqyvQ6ewapFaFuj09gxzKPGclhhkwQU4MpLDxMEBklImSyIysJ1x8/A1TA+lxuE6idGZrMZUHVEYGGRQyjfnNGz0NB0C3pFzxLtGsFewUHExYWDqxAIxQsJiCnfPFv/1TS5tlIhONuAIYXM3UYwHRKAQEQcSlEVBhH9er1poOqhXpMKhOKr7CmZ/B1tZtiXxcLRJGIiLqtRYppnTiG3IHrCEm+GhSyUtAzlYrqULvd//7xRw3//SKkbQAAUDA6Cp61rLjoyYHIGwNhCAkjHEdUpNcBgp59SChKFnlQySrCoVImk0Of9VChZWdBU7I77ySwVdEQNPEIKywNan8GgaLB3xL0VPywNBoxx1EAAABBPhxD+UQq0OQlRHQdCUZGVySDVsxYXe0u+anIkk2LT2m+yYns71vZOVrtA6sGnh36jolAQNLLHkFQaU8r8qW2xKCsSnfPSodiWIQVcRqQBlayo5KwUEDBB0eyyykYoKGCggYQOgB/aqGChj/+5QEDo/yJzkZCGEdgkUgA7EEI0xAAAGkAAAAIAAANIAAAAQYIOEcyayywMFDAwQMI4gSyggcqWyyyoYoKGBggYQOiH/+qsoIHAweANNNMqEJppA1qaaaKqqlgYlVEHu/6gmmmGhCaaQO//6YGqiBiIlVVXTTSqElaYYj//6qqoi5Kqqr///////////////qTEFNRTMuOTkuM6qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqo=");
         var softClick64 = "SUQzAwAAAAAAJVRQRTEAAAAbAAAAU291bmRKYXkuY29tIFNvdW5kIEVmZmVjdHP / +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";
         function playSoftClick() {
-            //softClick.play();
-            loudClick.play();
+            try {
+                //softClick.play();
+                loudClick.play();
+            }
+            catch (err) {
+                displayToast("Audio Disabled");
+            }
         }
 
         function f1() {
@@ -708,16 +714,38 @@
         //    }
         //}
 
-        function isAudioRunning() {
-            SafeAddToListbox("State: " + context.state);
-            if (context.state == "running") return true;
-            return true;
+        //function isAudioRunning() {
+        //    SafeAddToListbox("State: " + context.state);
+        //    if (context.state == "running") return true;
+        //    return true;
+        //}
+
+        function disconnectMQTT() {
+            try {
+                if (mqtt) mqtt.disconnect();
+            }
+            catch (err) {
+
+            }
+            try {
+                if (mqttFTP) mqttFTP.disconnect();
+            }
+            catch (err) {
+
+            }
         }
-
-        ConnectmqttFtp();
-
         function MQTTconnect() {
             kpfConnect(MQTThost, port, true);
+        }
+
+        function connectToMQTT() {
+            MQTTconnect();
+            ConnectmqttFtp();
+        }
+        window.addEventListener('load', init, false);
+        function init() {
+            //connectToMQTT();
+            displayToast("Double-Click For Menu");
         }
 
 
@@ -778,8 +806,6 @@
 
 
         function displayDialog() {
-
-
             $("#dialog").dialog({
                 autoOpen: false,
                 //width: "33%",
@@ -840,10 +866,6 @@
         });
 
 
-        window.addEventListener('load', init, false);
-        function init() {
-            MQTTconnect();
-        }
         //////document.addEventListener("keydown", event => {
         //////    SafeAddToListbox("KEY: " + event.key);
         //////    switch (event.key) {
@@ -886,7 +908,7 @@
         function onConnectionLost(reason) {
             SafeAddToListbox("Connection Lost" + reason.errorMessage);
             //document.getElementById("status_messages").innerHTML = "Connection Lost" + reason.errorMessage;
-            setTimeout(MQTTconnect, reconnectTimeout);
+            ////////setTimeout(MQTTconnect, reconnectTimeout);
         }
         function onFailure(message) {
             SafeAddToListbox("Connection Failure");
@@ -999,7 +1021,7 @@
                     var suboptions = {
                         qos: 1,
                         onSuccess: function () {
-                            displayToast("Double-Click For Menu");
+                            //displayToast("Double-Click For Menu");
                             kennyFisher("mqtt://scrn2.png", function (png) {
                                 if (png.length > 0) {
                                     var t = "data:image/png;base64," + arrayBufferToBase64(png)
@@ -1025,7 +1047,7 @@
 
                 mqttFTP.onConnectionLost = function (eObj) {
                     SafeAddToListbox("Lost Connection: " + eObj.errorMessage);
-                    setTimeout(ConnectmqttFtp, reconnectTimeout);
+                    //////////////setTimeout(ConnectmqttFtp, reconnectTimeout);
                 };
                 mqttFTP.onConnected = function () { alert("Connected"); };
 
@@ -1107,16 +1129,21 @@
 
 
         function KPFSendMessage(topic, msg) {
-            if (mqtt.isConnected() == true) {
+            if (mqtt && mqtt.isConnected() == true) {
                 //return;
                 message = new Paho.MQTT.Message(msg);
                 message.destinationName = topic;
                 message.qos = 1;
                 message.retained = false;
-                mqtt.send(message);
+                try {
+                    mqtt.send(message);
+                }
+                catch (err) {
+                    SafeAddToListbox("mqtt Send Error: " + err);
+                }
             }
             else {
-                SafeAddToListbox("mqttFTP not connected");
+                console.log("1. mqttFTP not connected");
             }
         }
 
@@ -1160,17 +1187,11 @@
         //engaged with your site and playback autoplay would be always allowed.
         function playSound(buffer) {
             if (context != null) {
-                context.resume();
-                if (isAudioRunning() == false) {
-                    displayToast("Audio Not Active!!");
-                }
-                else {
+                try {
                     context.resume();
 
                     var source = context.createBufferSource(); // creates a sound source
                     source.buffer = buffer;                    // tell the source which sound to play
-
-
                     audioVolume.connect(context.destination);
 
                     source.connect(audioVolume);
@@ -1186,12 +1207,13 @@
                             displayToast("Audio Disabled, Click Anywhere To Enable");
                         }
                     }, 500);
-
-
-                    // note: on older systems, may have to use deprecated noteOn(time);
+                }
+                catch (err) {
+                    displayToast("Audio Disabled, Click Anywhere To Enable");
                 }
             }
         }
+
 
 
 
@@ -1257,7 +1279,7 @@
         //}
 
         function GetMQTTFile(fName, callback) {
-            if (mqttFTP.isConnected() == true) {
+            if (mqttFTP && mqttFTP.isConnected() == true) {
 
                 if (fName.startsWith("mqtt://")) {
                     fName = fName.substring(7);
@@ -1280,10 +1302,15 @@
                 message.destinationName = dest;
                 message.qos = 1;
                 message.retained = false;
-                mqttFTP.send(message);
+                try {
+                    mqttFTP.send(message);
+                }
+                catch (err) {
+                    SafeAddToListbox("mqttFTP Send Error: " + err);
+                }
             }
             else {
-                SafeAddToListbox("mqttFTP not connected");
+                SafeAddToListbox("1. mqttFTP not connected");
             }
         }
         ////var dest = "";
@@ -1834,16 +1861,16 @@
             var vid = document.getElementById("myVideo");
             globalVolume = globalVolume - 0.1;
             if (globalVolume < 0.0) globalVolume = 0.0;
-            audioVolume.gain.value = globalVolume;
-            vid.volume = globalVolume;
+            if (audioVolume) audioVolume.gain.value = globalVolume;
+            if (vid) vid.volume = globalVolume;
         }
         function volumeUp() {
             playSoftClick();
             var vid = document.getElementById("myVideo");
             globalVolume = globalVolume + 0.1;
             if (globalVolume > 1.0) globalVolume = 1.0;
-            audioVolume.gain.value = globalVolume;
-            vid.volume = globalVolume;
+            if (audioVolume) audioVolume.gain.value = globalVolume;
+            if (vid) vid.volume = globalVolume;
         }
         function displaySlideshow() {
             SafeAddToListbox("Start SlideShow");
@@ -1868,7 +1895,7 @@
         }
         function stopAudio() {
             playSoftClick();
-            context.close();
+            if (context) context.close();
             createAudioContext();
             //context = new (window.AudioContext || window.webkitAudioContext)();
             //audioVolume = context.createGain();
@@ -1896,14 +1923,14 @@
         function displayConnections() {
             playSoftClick();
             var oStr = "mqtt: ";
-            if (mqtt.isConnected() == true) {
+            if (mqtt && mqtt.isConnected() == true) {
                 oStr += "Connected";
             }
             else {
                 oStr += "Not Connected";
             }
             oStr += "\nmqttFTP: ";
-            if (mqttFTP.isConnected() == true) {
+            if (mqttFTP && mqttFTP.isConnected() == true) {
                 oStr += "Connected";
             }
             else {
@@ -1915,7 +1942,7 @@
 
             oStr += "\nProtocol: " + window.location.protocol;
 
-            oStr += "\nAudio State: " + context.state;
+            if (context) oStr += "\nAudio State: " + context.state;
             oStr += "\nUnique Id: " + UniqueID;
             oStr += "\nMachine Id: " + MachineID;
             //context.resume();
@@ -2104,6 +2131,8 @@
         <button type="button" onclick="sayCondition()">Say Condition</button>
         <button type="button" onclick="toggleImages()">Toggle</button>
         <button type="button" onclick="displayConnections()">Connections</button>
+        <button type="button" onclick="connectToMQTT()">Connect</button>
+        <button type="button" onclick="disconnectMQTT()">Disconnect</button>
 
         <!--    <button type="button" onclick="startConnect()">Connect</button>-->
         <!--     <button type="button" onclick="getMqttBinary()">Get MQTT Binary</button>-->
@@ -2162,7 +2191,7 @@
             $('#picOne').fadeOut(1500);
             $('#picTwo').fadeOut(1500);
 
-                                                                                                                                                                                                                                                                                                                                                       ////////////////        //var yyy = bytes.length;
+                                                                                                                                                                                                                                                                                                                                                                                               ////////////////        //var yyy = bytes.length;
 
 
             /*
@@ -2219,7 +2248,7 @@
 
 
 
-                                                                                                                                                                                                                                                                                                                                                                                                //	saySomething("Mu ha ha! Works now.");
+                                                                                                                                                                                                                                                                                                                                                                                                                                        //	saySomething("Mu ha ha! Works now.");
 
 
 
