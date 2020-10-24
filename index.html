@@ -135,8 +135,8 @@
         }
         var port = 8000;
         var row = 0;
+        var ftpCounter = 100;
 
-        var FTPCounter = 100;
         var mqttFTP = null;
         var globalVolume = .8;
         var userName = "WebViewer"
@@ -369,18 +369,9 @@
 
 
 
-
-
-
-        function f7() {
-            //kennyFisher("mqtt://scrn1.png", function (png) { //startSlideShow
-            //    if (png.length > 0) {
-            //        var t = "data:image/png;base64," + arrayBufferToBase64(png)
-            //        document.getElementById("ItemPreview").src = t;
-            //        fadeNextImage(t);
-            //    }
-            //});
-        }
+        SafeAddToListbox("Starting Web Page ...");
+        SafeAddToListbox("Starting Web Page ...");
+        SafeAddToListbox("Starting Web Page ...");
 
 
 
@@ -458,6 +449,19 @@
             playSoftClick();
             KPFSendMessage("function", "say status");
         }
+
+
+
+        function f7() {
+            //kennyFisher("mqtt://scrn1.png", function (png) { //startSlideShow
+            //    if (png.length > 0) {
+            //        var t = "data:image/png;base64," + arrayBufferToBase64(png)
+            //        document.getElementById("ItemPreview").src = t;
+            //        fadeNextImage(t);
+            //    }
+            //});
+        }
+
         function f9() {
             playSoftClick();
             const synth = window.speechSynthesis;
@@ -1031,7 +1035,6 @@
             }
             catch (err) {
                 SafeAddToListbox("ERROR" + err.message);
-                document.getElementById("out_messages").innerHTML = err.message;
             }
             //mqttFTP.connect(connectOptions);
             ////console.log("Waiting For Connection");
@@ -1284,14 +1287,14 @@
             ////    }
             ////};
             var message = new Paho.MQTT.Message(fName);
-            FTPCounter++;
+            ftpCounter++;
             SafeAddToListbox("Get File: " + fName);
-            dest = "ftprequest/" + MachineID + "/" + FTPCounter + "/" + fName;
+            dest = "ftprequest/" + MachineID + "/" + ftpCounter + "/" + fName;
 
 
 
             var tEntry = {}
-            tEntry.response = "ftpresponse/" + MachineID + "/" + FTPCounter + "/" + fName;
+            tEntry.response = "ftpresponse/" + MachineID + "/" + ftpCounter + "/" + fName;
             tEntry.callback = callback;
             callbackArray.push(tEntry);
 
@@ -1784,14 +1787,23 @@
 
 
 
-        var ftpCounter = 100;
         function SafeAddToListbox(s) {
             try {
                 s = ftpCounter + " " + s;
-                ftpCounter++;
-                KPFSendMessage("safeadd/" + UniqueID + "/webviewer", s);
+                //ftpCounter++;
+                try {
+                    KPFSendMessage("safeadd/" + UniqueID + "/webviewer", s);
+                }
+                catch (err) {
+                    //alert(err);
+                }
                 console.log(s);
-                displayMessage(s);
+                try {
+                    displayMessage(s);
+                }
+                catch (err) {
+                    //alert(err);
+                }
                 //document.getElementById("status").innerHTML = s;
                 //document.getElementById("status_messages").innerHTML = s;
             }
@@ -1894,6 +1906,7 @@
                 oStr += "Not Connected";
             }
             oStr += "\nHost: " + location.hostname;
+            oStr += "\nBroker: " + MQTThost;
             oStr += "\nAudio State: " + context.state;
             context.resume();
             oStr += "\nAudio State: " + context.state;
@@ -2138,7 +2151,7 @@
             $('#picOne').fadeOut(1500);
             $('#picTwo').fadeOut(1500);
 
-                                                                                                                                                                                                                                                                                                                       ////////////////        //var yyy = bytes.length;
+                                                                                                                                                                                                                                                                                                                               ////////////////        //var yyy = bytes.length;
 
 
             /*
@@ -2195,7 +2208,7 @@
 
 
 
-                                                                                                                                                                                                                                                                                                                                                                //	saySomething("Mu ha ha! Works now.");
+                                                                                                                                                                                                                                                                                                                                                                        //	saySomething("Mu ha ha! Works now.");
 
 
 
