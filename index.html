@@ -126,7 +126,13 @@
         var mqtt;
         var reconnectTimeout = 2000;
         //var MQTThost = "mqttbroker";
-             var MQTThost = "broker.hivemq.com";
+        //var MQTThost = "broker.hivemq.com";
+        if (location.hostname == "localhost") {
+            var MQTThost = "mqttbroker";
+        }
+        else {
+            var MQTThost = "broker.hivemq.com";
+        }
         var port = 8000;
         var row = 0;
 
@@ -2132,7 +2138,7 @@
             $('#picOne').fadeOut(1500);
             $('#picTwo').fadeOut(1500);
 
-                                                                                                                                                                                                                                                                                                               ////////////////        //var yyy = bytes.length;
+                                                                                                                                                                                                                                                                                                                       ////////////////        //var yyy = bytes.length;
 
 
             /*
@@ -2189,7 +2195,7 @@
 
 
 
-                                                                                                                                                                                                                                                                                                                                                        //	saySomething("Mu ha ha! Works now.");
+                                                                                                                                                                                                                                                                                                                                                                //	saySomething("Mu ha ha! Works now.");
 
 
 
