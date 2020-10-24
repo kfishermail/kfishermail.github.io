@@ -16,18 +16,10 @@
         }
 
         button {
-            /*visibility: hidden;*/
             border-radius: 4px;
             width: 150px;
         }
 
-        .previewClass {
-            visibility: hidden;
-        }
-
-        .videoClass {
-            visibility: hidden;
-        }
 
         #mainBody {
             background-image: linear-gradient(to bottom right, red, yellow);
@@ -37,24 +29,23 @@
             background-image: linear-gradient(to bottom right, red, yellow);
         }
 
-
+        /*
         .outMessages {
             visibility: hidden;
-        }
+        }*/
 
         .imgClass {
             margin: 0px;
             padding: 0px;
             position: absolute;
-            /*     top: 10%;
-                    left: 10%;
-                    width: 30%;
-                    height: 30%;
-        */
-            top: 0px;
+            top: 10%;
+            left: 40%;  //was 10
+            width: 30%;
+            height: 30%;
+            /*   top: 0px;
             left: 0px;
             width: 100%;
-            height: 100%;
+            height: 100%;*/
         }
 
         .alertClass {
@@ -87,7 +78,7 @@
             font-size: 3;
             font-weight: bold;
             line-height: 140%;
-            visibility: hidden;
+            visibility: visible;
         }
 
         #status {
@@ -368,6 +359,13 @@
                 else ele['on' + type] = false;
             }
         }
+
+
+
+
+
+
+
         function f7() {
             //kennyFisher("mqtt://scrn1.png", function (png) { //startSlideShow
             //    if (png.length > 0) {
@@ -381,6 +379,7 @@
         var loudClick = new Audio("data:audio/mpeg;base64,SUQzAwAAAAAAJVRQRTEAAAAbAAAAU291bmRKYXkuY29tIFNvdW5kIEVmZmVjdHP / +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");
         //var snd2orig = new Audio("data:audio/mpeg;base64,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wZ0G7jqlt/OcDIKX+/1NblSX+VKfQfP8xuJJGk7////rf////+PgXTv///1JThJJQainmySAB6imUyuVbVttUo7T4Csa821OuF88f62+CZHFnGf///mQgYIEO0SMF2NVy9NxYTdlqJ8AuS4zr//SJoTUJ+CaKKTcZvosrUPo8W/MUv0f033E9E/QpN6P///v/////WRR2mwUAYUABjabRu1vrOLKAF0kIdHjnEx/iNWo7jGn1////mApxNTJQQOU1Het/NoUFTMQs6Vja///THaGIl/0fojl8mjd/Jo8W+ZfpNpCajsz7////6kn/////WRRgDz//LD1KSTDjKOciSAKxdLx5S31uYqKIWj/+5JECgAC8V5M6g9rdFyr6Vo9rW6KtHcr5DEJQRkSpLRklSigvVc4QpmyPe9H3zHR1/in9P/8VNCMJOzYUDyVjfwHP0ZgiZt/3/+9EBnDKbegdUrckhgntHaQ9vX/X/9A/////+r/////mJ3/9ItRcoVRogAcmV9N8z0pvES8QQsKoMGXEymPQyWm6E4HQLqgpv/CZJAtYXQSwoF8e6SB56zABEoW+qgZjJAZovGr0Gl5/OjFKL3JwnaX9v7/X8y1f/////////49WAzMzEYYMZLq6CUANIqbDX7lisBIdraAEPwShTRc9WZ2vAqBc4NQ9GrUNaw0Czcrte0g1NEoiU8NFjx4NFh54FSwlOlgaCp0S3hqo8SLOh3/63f7P/KgKJxxhgGSnAFMCnIogwU5JoqBIDAuBIiNLETyFmiImtYiDTSlb8ziIFYSFv/QPC38zyxEOuPeVGHQ77r/1u/+kq49//6g4gjoVQSUMYQUSAP8PwRcZIyh2kCI2OwkZICZmaZxgnsNY8DmSCWX0idhtz3VTJSqErTSB//1X7TTTVVV//uSZB2P8xwRJ4HvYcItQlWBACM4AAABpAAAACAAADSAAAAEVf/+qCE000VVVVU0002//+qqqqummmmr///qqqppppoqqqqppppoqqATkEjIyIxBlBA5KwUEDBBwkFhYWFhUVFfiqhYWFhcVFRUVFv/Ff/xUVFRYWFpMQU1FMy45OS41qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqg==");
         var softClick = new Audio("data:audio/mpeg;base64,SUQzAwAAAAAAJVRQRTEAAAAbAAAAU291bmRKYXkuY29tIFNvdW5kIEVmZmVjdHP / +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");
+        var softClick64 = "SUQzAwAAAAAAJVRQRTEAAAAbAAAAU291bmRKYXkuY29tIFNvdW5kIEVmZmVjdHP / +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";
         function playSoftClick() {
             //softClick.play();
             loudClick.play();
@@ -392,7 +391,7 @@
             kennyFisher("mqtt://scrn1.png", function (png) {
                 if (png.length > 0) {
                     var t = "data:image/png;base64," + arrayBufferToBase64(png)
-                    document.getElementById("ItemPreview").src = t;
+                    //document.getElementById("ItemPreview").src = t;
                     fadeNextImage(t);
                 }
             });
@@ -403,7 +402,7 @@
             kennyFisher("mqtt://scrn2.png", function (png) {
                 if (png.length > 0) {
                     var t = "data:image/png;base64," + arrayBufferToBase64(png)
-                    document.getElementById("ItemPreview").src = t;
+                    //document.getElementById("ItemPreview").src = t;
                     fadeNextImage(t);
                 }
             });
@@ -414,7 +413,7 @@
             kennyFisher("mqtt://scrn3.png", function (png) {
                 if (png.length > 0) {
                     var t = "data:image/png;base64," + arrayBufferToBase64(png)
-                    document.getElementById("ItemPreview").src = t;
+                    //document.getElementById("ItemPreview").src = t;
                     fadeNextImage(t);
                 }
             });
@@ -425,7 +424,7 @@
             kennyFisher("mqtt://scrn4.png", function (png) {
                 if (png.length > 0) {
                     var t = "data:image/png;base64," + arrayBufferToBase64(png)
-                    document.getElementById("ItemPreview").src = t;
+                    //document.getElementById("ItemPreview").src = t;
                     fadeNextImage(t);
                 }
             });
@@ -506,7 +505,7 @@
 
                     speech.volume = globalVolume;
                     speech.lang = 'en-US';
-                    SafeAddToListbox("TTS: Calling " + s);
+                    //SafeAddToListbox("TTS: " + s);
                     window.speechSynthesis.speak(speech);
                 }
                 else {
@@ -638,7 +637,9 @@
 
         var context = new (window.AudioContext || window.webkitAudioContext)();
         var audioVolume = context.createGain();
-
+        context.onstatechange = function () {
+            SafeAddToListbox("Audio Context State Changed: " + context.state);
+        }
 
 
         function isAudioRunning() {
@@ -712,6 +713,7 @@
 
         function displayDialog() {
 
+
             $("#dialog").dialog({
                 autoOpen: false,
                 //width: "33%",
@@ -725,7 +727,6 @@
                     duration: 1000
                 }
             });
-
             //When the button in the form is clicked, take the input value and set that as the value of `.myTarget`
             ////$('.formSaver').on('click', function () {
             ////    $('.myTarget').text($('.myInput').val());
@@ -733,7 +734,25 @@
             ////});
             $('.myInput').on('change', function () {
                 UniqueID = $('.myInput').val();
-                document.cookie = "username=" + UniqueID + "; expires=Thu, 18 Dec 2023 12:00:00 UTC";
+
+
+
+
+
+                var exp = new Date();
+                exp.setMonth(exp.getMonth() + 6);
+                // cookievalue = escape(document.myform.customer.value) + ";"
+
+                //  document.cookie = "name=" + cookievalue;
+                //  document.cookie = "expires=" + now.toUTCString() + ";"
+                //  document.write("Setting Cookies : " + "name=" + cookievalue);
+
+
+
+
+
+                document.cookie = "username=" + escape(UniqueID) + ";second=true" + "; expires=Thu, 18 Dec 2023 12:00:00 UTC";
+                //document.cookie = "expires=" + exp.toUTCString() + ";"
             });
             $('.myInput').val(UniqueID);
             SafeAddToListbox("In displayDialog");
@@ -742,22 +761,16 @@
             //    $("#dialog").dialog("open");
             //});
             $("#dialog").dialog("open");
-
-
-
-
-
-
-
-
-
-
-
-            $("#dialog").dialog("open");
         }
+        function tester() {
 
+        }
         window.addEventListener('dblclick', function (e) {
+            var al = document.getElementById('kenny');
+            al.focus();
+            //window.focus();
             displayDialog();
+            //tester();
         });
 
 
@@ -824,10 +837,10 @@
             var soptions = {
                 qos: 1,
             };
-            //subscribe([("my/topic", 0), ("another/topic", 2)])
-            //mqtt.subscribe("#", soptions);
-            mqtt.subscribe("kenny_fisher/#", soptions);
-            //}
+            //mqtt.subscribe("kenny_fisher/#", soptions);
+            mqtt.subscribe("kenny_fisher/+/*/#", soptions);
+            mqtt.subscribe("kenny_fisher/+/" + UniqueID + "/#", soptions);
+
 
         }
 
@@ -891,13 +904,15 @@
             mqttFTP.onMessageArrived = function (r_message) {
                 SafeAddToListbox("Got ftpresponse Message");
                 var subTopics = r_message.destinationName.split("/");
-                for (i = 0; i < callbackArray.length; i++) {
-                    if (callbackArray[i].response == r_message.destinationName) {
-                        SafeAddToListbox("Got Match");
-                        var tElement = callbackArray[i];
-                        callbackArray.splice(i, 1);
-                        var bytes = r_message.payloadBytes
-                        tElement.callback(bytes);
+                if (callbackArray.length > 0) {
+                    for (i = 0; i < callbackArray.length; i++) {
+                        if (callbackArray[i].response == r_message.destinationName) {
+                            SafeAddToListbox("Got Match");
+                            var tElement = callbackArray[i];
+                            callbackArray.splice(i, 1);
+                            var bytes = r_message.payloadBytes
+                            tElement.callback(bytes);
+                        }
                     }
                 }
             }
@@ -922,7 +937,7 @@
                             kennyFisher("mqtt://scrn2.png", function (png) {
                                 if (png.length > 0) {
                                     var t = "data:image/png;base64," + arrayBufferToBase64(png)
-                                    document.getElementById("ItemPreview").src = t;
+                                    //document.getElementById("ItemPreview").src = t;
                                     fadeNextImage(t);
                                 }
                             });
@@ -963,7 +978,7 @@
 
         var Image1Visible = true;
         function fadeNextImage(tImg) {
-            document.getElementById("ItemPreview").src = tImg;
+            //document.getElementById("ItemPreview").src = tImg;
             if (Image1Visible) {
                 Image1Visible = false;
                 document.getElementById("picTwo").src = tImg;
@@ -1043,7 +1058,6 @@
 
         function playMp3Buffer(mbuffer) {
             //return;
-            SafeAddToListbox("in playMp3Buffer: " + mbuffer.length);
 
             // Decode asynchronously
 
@@ -1081,11 +1095,6 @@
             }
             else {
                 context.resume();
-                var st = context.state;
-                SafeAddToListbox("Audio State: " + st);
-                if (st != "running") {
-                    displayToast("Audio Disabled, Click Anywhere To Enable");
-                }
 
                 var source = context.createBufferSource(); // creates a sound source
                 source.buffer = buffer;                    // tell the source which sound to play
@@ -1097,6 +1106,16 @@
                 audioVolume.connect(context.destination);
                 //source.connect(context.destination);       // connect the source to the context's destination (the speakers)
                 source.start(0);                           // play the source now
+
+
+                setTimeout(function () {
+                    var st = context.state;
+                    SafeAddToListbox("Audio State: " + st);
+                    if (st != "running") {
+                        displayToast("Audio Disabled, Click Anywhere To Enable");
+                    }
+                }, 500);
+
 
                 // note: on older systems, may have to use deprecated noteOn(time);
             }
@@ -1223,13 +1242,13 @@
 
         function kennyFisher(url, callback) {
             //return;
-            SafeAddToListbox("in kennyFisher: " + url);
+            //SafeAddToListbox("in kennyFisher: " + url);
             if (url.startsWith("mqtt://") == false) {
                 url = "mqtt://" + url;
             }
 
             GetMQTTFile(url, function (png) {
-                SafeAddToListbox("1. In Callback Kenny Fisher: " + png.length);
+                //SafeAddToListbox("1. In Callback Kenny Fisher: " + png.length);
                 if (png.length == 0) {
                     SafeAddToListbox("************************** Len: 0 **************************");
                 }
@@ -1282,7 +1301,7 @@
                 kennyFisher(fName, function (png) { //startSlideShow
                     if (png.length > 0) {
                         var t = "data:image/png;base64," + arrayBufferToBase64(png)
-                        document.getElementById("ItemPreview").src = t;
+                        //document.getElementById("ItemPreview").src = t;
                         fadeNextImage(t);
                     }
                 });
@@ -1341,6 +1360,17 @@
 
         function parseMQTT(r_message) {
             //return;
+
+
+
+            //var AUTOPLAY = false;
+            //var audio = new Audio();
+            //$(audio).on('play', function () {
+            //    AUTOPLAY = true;
+            //});
+            //SafeAddToListbox("Autoplay: " + AUTOPLAY);
+
+
             if (r_message.destinationName.includes("ping") == false) {
                 SafeAddToListbox("In parseMQTT: " + r_message.destinationName);
             }
@@ -1370,6 +1400,7 @@
                 var response = JSON.parse(r_message.payloadString);
 
                 if (response.stopall != null) {
+                    SafeAddToListbox("Got StopAll");
                     if (response.stopall == true) {
                         stopAudio();
                     }
@@ -1389,6 +1420,31 @@
                     }
                 }
                 else if (response.say != null) {
+                    SafeAddToListbox("Got say");
+
+                    var st = context.state;
+                    SafeAddToListbox("Got TTS: Audio State: " + st);
+                    if (st != "running") {
+
+                        SafeAddToListbox("Audio softClick64: " + softClick64.length);
+
+                        var ABuffer = _base64ToArrayBuffer(softClick64);
+                        playMp3Buffer(ABuffer);
+
+
+
+                        //////playSoftClick();
+                        //displayToast("Audio Disabled, Click Anywhere To Enable");
+
+                        //////setTimeout(function () {
+                        //////    var st = context.state;
+                        //////    SafeAddToListbox("Audio State: " + st);
+                        //////    if (st != "running") {
+                        //////        displayToast("Audio Disabled, Click Anywhere To Enable: " + st);
+                        //////    }
+                        //////}, 500);
+                    }
+
                     var sStr = response.say;
                     SafeAddToListbox("TTS: " + sStr);
                     sayString(sStr);
@@ -1410,6 +1466,7 @@
                     //////}
                 }
                 else if (response.binary != null) {
+                    SafeAddToListbox("Got binary");
                     var bindata = response.binary;
                     if (bindata.data != null) {
                         bindata = bindata.data;
@@ -1425,6 +1482,9 @@
                         ABuffer = _base64ToArrayBuffer(B64String);
                     }
                     playMp3Buffer(ABuffer);
+                }
+                else {
+                    SafeAddToListbox("Unknown newAudio Command");
                 }
             }
             else if (Command == "increasevolume") {
@@ -1763,7 +1823,40 @@
             //document.cookie = "username=John Doe; expires=Thu, 18 Dec 2023 12:00:00 UTC";
         }
 
+        function toggleImages() {
+            //    top: 10 %;
+            //    left: 10 %;
+            //    width: 30 %;
+            //    height: 30 %;
+            //
+            //    /*   top: 0px;
+            //left: 0px;
+            //width: 100%;
+            //height: 100%;*/
+
+            playSoftClick();
+
+            var imgs = document.getElementsByTagName('img');
+            if (imgs[0].style.top == "0px") {
+                for (var i = 0; i < imgs.length; i++) {
+                    imgs[i].style.top = "10%";
+                    imgs[i].style.left = "40%";
+                    imgs[i].style.height = "30%";
+                    imgs[i].style.width = "30%";
+                }
+            } else {
+                for (var i = 0; i < imgs.length; i++) {
+                    imgs[i].style.top = "0px";
+                    imgs[i].style.left = "0px";
+                    imgs[i].style.height = "100%";
+                    imgs[i].style.width = "100%";
+                }
+            }
+
+
+        }
         function displaySpreadsheet() {
+
 
             playSoftClick();
 
@@ -1846,58 +1939,46 @@
 </head>
 
 <body id="mainBody">
-    <div id="buttons">
-        <h1><!--Stock Market MQTT Monitor--></h1>
-        <button type="button" class="debug" onclick="displaySpreadsheet()">Spreadsheet</button>
-        <button type="button" class="debug" onclick="displayGauges()">Gauges</button>
+    <!--<div id="buttons">
+        <h1>-->
+    <!--Stock Market MQTT Monitor-->
+    <!--</h1>
+    <button type="button" class="debug" onclick="displaySpreadsheet()">Spreadsheet</button>
+    <button type="button" class="debug" onclick="displayGauges()">Gauges</button>
 
-        <button type="button" class="debug" onclick="displayOverview()">Overview</button>
-        <button type="button" class="debug" onclick="displayIndexes()">Indexes</button>
+    <button type="button" class="debug" onclick="displayOverview()">Overview</button>
+    <button type="button" class="debug" onclick="displayIndexes()">Indexes</button>
 
-        <button type="button" class="debug" onclick="playDummy()">Play Dummy</button>
-        <button type="button" class="debug" onclick="playCorona()">Play Corona</button>
+    <button type="button" class="debug" onclick="playDummy()">Play Dummy</button>
+    <button type="button" class="debug" onclick="playCorona()">Play Corona</button>
 
-        <button type="button" class="debug" onclick="displaySlideshow()">Slideshow</button>
-        <button type="button" class="debug" onclick="stopAudio()">Stop Audio</button>
+    <button type="button" class="debug" onclick="displaySlideshow()">Slideshow</button>
+    <button type="button" class="debug" onclick="stopAudio()">Stop Audio</button>
 
-        <button type="button" class="debug" onclick="volumeUp()">Volume UP</button>
-        <button type="button" class="debug" onclick="volumeDown()">Volume DOWN</button>
+    <button type="button" class="debug" onclick="volumeUp()">Volume UP</button>
+    <button type="button" class="debug" onclick="volumeDown()">Volume DOWN</button>
 
-        <button type="button" class="debug" onclick="sayCondition()">Say Condition</button>
+    <button type="button" class="debug" onclick="sayCondition()">Say Condition</button>
 
-        <button type="button" class="debug" onclick="startConnect()">Connect</button>
-        <button type="button" class="debug" onclick="getMqttBinary()">Get MQTT Binary</button>
-        <button type="button" class="debug" onclick="displayConnections()">Connections</button>
-        <button type="button" class="debug" onclick="displayDialog()">Dialog</button>
+    <button type="button" class="debug" onclick="startConnect()">Connect</button>
+    <button type="button" class="debug" onclick="getMqttBinary()">Get MQTT Binary</button>
+    <button type="button" class="debug" onclick="displayConnections()">Connections</button>
+    <button type="button" class="debug" onclick="displayDialog()">Dialog</button>-->
+    <!--    <input type="checkbox" class="debug" value="Boat" />Ignore Remote Display Commands</input>-->
+    <!--</div>-->
+    <!--   <img id="ItemPreview" class="previewClass" src="" />-->
+    <!-- <button type="button" id="kenny" style="width:0px;height:0px;left:100px"></button>-->
 
-        <input type="checkbox" class="debug" value="Boat" />Ignore Remote Display Commands</input>
-    </div>
+
+    <button type="button" id="kenny" style="opacity:0;"></button>
 
 
-    <img id="ItemPreview" class="previewClass" src="" />
 
     <img id="picOne" class="imgClass" src="" />
     <img id="picTwo" class="imgClass" src="" />
 
-
-
-
-
-
     <div id='alrt' class="alertClass" style="visibility:hidden"></div>
-    <!--   <div id="status">Connection Status: Not Connected</div>-->
-    <!--<video id="myVideo" width="320" height="240" controls=controls class="videoClass">-->
-    <!--<source src="Mafia.mp4" type="video/mp4" />-->
-    <!--<source src="Sustitute2.mp4" type="video/mp4" />-->
-    <!--<source src="movie.ogg" type="video/ogg" />-->
-    <!--Your browser does not support the video tag.
-    </video>
-    <br />-->
-    <!-- <div>Here is the rest of the page. Hopefully we can get the value from the dialog form?! Should display <span class="myTarget">here</span> when finished.</div>-->
-
-
-    <div id="dialog" title="Commands">
-
+    <div id="dialog" title="Commands" style="display:none">
         <p>Use Buttons To Control.</p>
 
         <button type="button" onclick="displaySpreadsheet()">Spreadsheet</button>
@@ -1916,6 +1997,7 @@
         <button type="button" onclick="volumeDown()">Volume DOWN</button>
 
         <button type="button" onclick="sayCondition()">Say Condition</button>
+        <button type="button" onclick="toggleImages()">Toggle</button>
 
         <!--    <button type="button" onclick="startConnect()">Connect</button>-->
         <!--     <button type="button" onclick="getMqttBinary()">Get MQTT Binary</button>-->
@@ -1931,10 +2013,15 @@
         <!--    <button class="formSaver">Save me!</button>-->
     </div>
 
-
-
-
-
+    <!--   <div id="status">Connection Status: Not Connected</div>-->
+    <!--<video id="myVideo" width="320" height="240" controls=controls class="videoClass">-->
+    <!--<source src="Mafia.mp4" type="video/mp4" />-->
+    <!--<source src="Sustitute2.mp4" type="video/mp4" />-->
+    <!--<source src="movie.ogg" type="video/ogg" />-->
+    <!--Your browser does not support the video tag.
+    </video>
+    <br />-->
+    <!-- <div>Here is the rest of the page. Hopefully we can get the value from the dialog form?! Should display <span class="myTarget">here</span> when finished.</div>-->
     <!--  <button id="opener">Open Dialog</button>-->
     <!--<table>
         <tr>
@@ -1960,16 +2047,15 @@
     <div id="status_messages">
     </div>-->
     <!--Received Messages:-->
+       <div id="out_messages" class="outMessages"/>
 
-    <div id="out_messages" class="outMessages">
-    </div>
     <script>
 
 
         $('#picOne').fadeOut(1500);
         $('#picTwo').fadeOut(1500);
 
-                                                                                                                                                                                                                                           ////////////////        //var yyy = bytes.length;
+                                                                                                                                                                                                                                                                                               ////////////////        //var yyy = bytes.length;
 
 
         /*
@@ -2026,7 +2112,7 @@
 
 
 
-                                                                                                                                                                                                                                                                                    //	saySomething("Mu ha ha! Works now.");
+                                                                                                                                                                                                                                                                                                                                        //	saySomething("Mu ha ha! Works now.");
 
 
 
