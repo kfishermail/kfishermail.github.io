@@ -7,8 +7,8 @@
     <style>
         body {
             overflow: hidden; /*new version Hide scrollbars    --------------- */
+            background: linear-gradient(to left top, blue, red) fixed;
         }
-
         .debug {
             visibility: hidden;
             border-radius: 4px;
@@ -21,9 +21,9 @@
         }
 
 
-        #mainBody {
+  /*      #mainBody {
             background-image: linear-gradient(to bottom right, red, yellow);
-        }
+        }*/
 
         #dialog {
             background-image: linear-gradient(to bottom right, red, yellow);
@@ -369,8 +369,6 @@
 
 
 
-        SafeAddToListbox("Starting Web Page ...");
-        SafeAddToListbox("Starting Web Page ...");
         SafeAddToListbox("Starting Web Page ...");
 
 
@@ -924,17 +922,17 @@
             s = s + "</br>";
             try {
                 document.getElementById("out_messages").innerHTML += s;
+                if (row > 15) {
+                    row = 1;
+                    document.getElementById("out_messages").innerHTML = s;
+                }
+                else {
+                    row += 1;
+                }
             }
             catch (err) {
-                document.getElementById("out_messages").innerHTML = err.message;
+                //document.getElementById("out_messages").innerHTML = err.message;
             }
-
-            if (row > 15) {
-                row = 1;
-                document.getElementById("out_messages").innerHTML = s;
-            }
-            else
-                row += 1;
         }
 
         function onMessageArrived(r_message) {
@@ -1071,7 +1069,7 @@
                 SafeAddToListbox("Could Not Find replaceAll");
             }
             else {
-                msg = msg.replaceAll("\n", "</br>");
+                msg = msg.replaceAll("\n", "\n</br>");
             }
             var element = document.getElementById('alrt');
             if (element != null) {
@@ -1109,12 +1107,17 @@
 
 
         function KPFSendMessage(topic, msg) {
-            //return;
-            message = new Paho.MQTT.Message(msg);
-            message.destinationName = topic;
-            message.qos = 1;
-            message.retained = false;
-            mqtt.send(message);
+            if (mqtt.isConnected() == true) {
+                //return;
+                message = new Paho.MQTT.Message(msg);
+                message.destinationName = topic;
+                message.qos = 1;
+                message.retained = false;
+                mqtt.send(message);
+            }
+            else {
+                SafeAddToListbox("mqttFTP not connected");
+            }
         }
 
 
@@ -1248,64 +1251,65 @@
 
 
 
-
+        //if (mqttFTP == null) {
+        //    SafeAddToListbox("mqttFTP = null");
+        //    return;
+        //}
 
         function GetMQTTFile(fName, callback) {
-            if (mqttFTP == null) {
-                SafeAddToListbox("mqttFTP = null");
-                return;
+            if (mqttFTP.isConnected() == true) {
+
+                if (fName.startsWith("mqtt://")) {
+                    fName = fName.substring(7);
+                }
+
+                var message = new Paho.MQTT.Message(fName);
+                ftpCounter++;
+                SafeAddToListbox("Get File: " + fName);
+                dest = "ftprequest/" + MachineID + "/" + ftpCounter + "/" + fName;
+
+
+
+                var tEntry = {}
+                tEntry.response = "ftpresponse/" + MachineID + "/" + ftpCounter + "/" + fName;
+                tEntry.callback = callback;
+                callbackArray.push(tEntry);
+
+
+                SafeAddToListbox("Sent: " + dest);
+                message.destinationName = dest;
+                message.qos = 1;
+                message.retained = false;
+                mqttFTP.send(message);
             }
-            if (mqttFTP.isConnected() == false) {
+            else {
                 SafeAddToListbox("mqttFTP not connected");
-                return;
             }
-            if (fName.startsWith("mqtt://")) {
-                fName = fName.substring(7);
-            }
-            ////var dest = "";
-            ////mqttFTP.onMessageArrived = function (r_message) {
-            ////    SafeAddToListbox("Got Message");
-            ////    var subTopics = r_message.destinationName.split("/");
-            ////    switch (subTopics[0]) {
-            ////        case "ftpresponse":
-            ////            //SafeAddToListbox("YES, Got ftpresponse message");
-            ////            var sourceTopics = dest.split("/");
-
-            ////            if (subTopics[2] == sourceTopics[2]) {
-            ////                var bytes = r_message.payloadBytes
-            ////                SafeAddToListbox("Got Match !!!!!!!!!!!!!!!!!!!");
-            ////                SafeAddToListbox("Calling Callback, Len: " + bytes.length);
-            ////                if (bytes.length == 0) {
-            ////                    SafeAddToListbox("---------------   FTP Response  Length == 0 -------------")
-            ////                }
-            ////                callback(bytes)
-            ////            }
-            ////            else {
-            ////                SafeAddToListbox("No Match - MS: " + subTopics[2] + " ME: " + sourceTopics[2]);
-            ////            }
-            ////            break;
-            ////    }
-            ////};
-            var message = new Paho.MQTT.Message(fName);
-            ftpCounter++;
-            SafeAddToListbox("Get File: " + fName);
-            dest = "ftprequest/" + MachineID + "/" + ftpCounter + "/" + fName;
-
-
-
-            var tEntry = {}
-            tEntry.response = "ftpresponse/" + MachineID + "/" + ftpCounter + "/" + fName;
-            tEntry.callback = callback;
-            callbackArray.push(tEntry);
-
-
-            SafeAddToListbox("Sent: " + dest);
-            message.destinationName = dest;
-            message.qos = 1;
-            message.retained = false;
-            mqttFTP.send(message);
         }
+        ////var dest = "";
+        ////mqttFTP.onMessageArrived = function (r_message) {
+        ////    SafeAddToListbox("Got Message");
+        ////    var subTopics = r_message.destinationName.split("/");
+        ////    switch (subTopics[0]) {
+        ////        case "ftpresponse":
+        ////            //SafeAddToListbox("YES, Got ftpresponse message");
+        ////            var sourceTopics = dest.split("/");
 
+        ////            if (subTopics[2] == sourceTopics[2]) {
+        ////                var bytes = r_message.payloadBytes
+        ////                SafeAddToListbox("Got Match !!!!!!!!!!!!!!!!!!!");
+        ////                SafeAddToListbox("Calling Callback, Len: " + bytes.length);
+        ////                if (bytes.length == 0) {
+        ////                    SafeAddToListbox("---------------   FTP Response  Length == 0 -------------")
+        ////                }
+        ////                callback(bytes)
+        ////            }
+        ////            else {
+        ////                SafeAddToListbox("No Match - MS: " + subTopics[2] + " ME: " + sourceTopics[2]);
+        ////            }
+        ////            break;
+        ////    }
+        ////};
         var callbackArray = [];
 
 
@@ -1790,6 +1794,7 @@
         function SafeAddToListbox(s) {
             try {
                 s = ftpCounter + " " + s;
+                console.log(s);
                 //ftpCounter++;
                 try {
                     KPFSendMessage("safeadd/" + UniqueID + "/webviewer", s);
@@ -1797,7 +1802,6 @@
                 catch (err) {
                     //alert(err);
                 }
-                console.log(s);
                 try {
                     displayMessage(s);
                 }
@@ -1907,9 +1911,15 @@
             }
             oStr += "\nHost: " + location.hostname;
             oStr += "\nBroker: " + MQTThost;
+            oStr += "\nSecure: " + window.isSecureContext;
+
+            oStr += "\nProtocol: " + window.location.protocol;
+
             oStr += "\nAudio State: " + context.state;
-            context.resume();
-            oStr += "\nAudio State: " + context.state;
+            oStr += "\nUnique Id: " + UniqueID;
+            oStr += "\nMachine Id: " + MachineID;
+            //context.resume();
+            //oStr += "\nAudio State: " + context.state;
             displayToast(oStr);
             SafeAddToListbox("Trying");
             var result = navigator.userAgent;
@@ -2026,6 +2036,7 @@
         }
         function sayCondition() {
             playSoftClick();
+            SafeAddToListbox("Sending function message - say status");
             KPFSendMessage("function", "say status");
         }
 
@@ -2151,7 +2162,7 @@
             $('#picOne').fadeOut(1500);
             $('#picTwo').fadeOut(1500);
 
-                                                                                                                                                                                                                                                                                                                               ////////////////        //var yyy = bytes.length;
+                                                                                                                                                                                                                                                                                                                                                       ////////////////        //var yyy = bytes.length;
 
 
             /*
@@ -2208,7 +2219,7 @@
 
 
 
-                                                                                                                                                                                                                                                                                                                                                                        //	saySomething("Mu ha ha! Works now.");
+                                                                                                                                                                                                                                                                                                                                                                                                //	saySomething("Mu ha ha! Works now.");
 
 
 
