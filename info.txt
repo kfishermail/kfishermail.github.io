@@ -1,0 +1,38 @@
+username.github.io
+C:\Users\kenny\AppData\Local\Google\Chrome\Application\chrome.exe "C:\Users\kenny\Documents\Visual Studio 2019\Projects\WebViewer\WebViewer\index.html"  --kiosk --autoplay-policy=no-user-gesture-required --user-data-dir=$(mktemp -d)
+
+
+https://github.com/kfishermail/kfishermail.github.io
+
+C:\Users\kenny\Documents\Visual Studio 2019\Projects\WebViewer\WebViewer\index.html
+
+
+Broker: broker.hivemq.com
+TCP Port: 1883
+Websocket Port: 8000
+
+https://sites.google.com/view/kpfstock
+my page
+https://kfishermail.github.io/
+
+
+
+
+
+
+
+
+To update github:
+
+git add index.html
+git commit -m "message"
+git push -u orgin main
+
+
+
+
+
+
+
+
+
