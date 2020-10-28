@@ -147,12 +147,22 @@
         var reconnectTimeout = 2000;
         //var MQTThost = "mqttbroker";
         //var MQTThost = "broker.hivemq.com";
-        if (location.hostname == "localhost" || location.hostname == "mrouter") {
-            var MQTThost = "mqttbroker";
+        switch (location.hostname) {
+            case "localhost":
+            case "mrouter":
+            case "dlaptop":
+                var MQTThost = "mqttbroker";
+                break;
+            default:
+                var MQTThost = "broker.hivemq.com";
+                break;
         }
-        else {
-            var MQTThost = "broker.hivemq.com";
-        }
+        ////if (location.hostname == "localhost" || location.hostname == "mrouter") {
+        ////    var MQTThost = "mqttbroker";
+        ////}
+        ////else {
+        ////    var MQTThost = "broker.hivemq.com";
+        ////}
         var port = 8000;
         var row = 0;
         var ftpCounter = 100;
@@ -1935,7 +1945,7 @@
             if (context) context.close();
         }
 
-  
+
         function getMqttBinary() {
             playSoftClick();
             SafeAddToListbox("In getMqttBinary onSuccess: " + mqttFTP.isConnected());
@@ -2225,7 +2235,7 @@
             $('#picOne').fadeOut(1500);
             $('#picTwo').fadeOut(1500);
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                       ////////////////        //var yyy = bytes.length;
+                                                                                                                                                                                                                                                                                                                                                                                                                                               ////////////////        //var yyy = bytes.length;
 
 
             /*
@@ -2329,7 +2339,7 @@
                         });
 
             */
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                //	saySomething("Mu ha ha! Works now.");
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        //	saySomething("Mu ha ha! Works now.");
 
 
 
