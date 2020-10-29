@@ -395,7 +395,113 @@
             }
         }
 
+        var prefs = {
+            data: {},
+            load: function () {
+                var the_cookie = document.cookie.split(';');
+                if (the_cookie.length > 0) {
+                    var tmp;
+                    var gotJson = false;
+                    for (var i = 0; i < the_cookie.length; i++) {
+                        try {
+                            tmp = JSON.parse(the_cookie[i]);
+                            if (tmp.username) {
+                                gotJson = true;
+                                break;
+                            }
+                        }
+                        catch (err) {
 
+                        }
+                    }
+                    if (gotJson) {
+                        this.data = tmp;
+                        //alert("GotData");
+                    }
+                }
+                return this.data;
+            },
+
+            save: function (expires, path) {
+                var d = expires || new Date(2022, 02, 02);
+                var p = path || '/';
+                //       documentcookie = JSON.stringify(escape(this.data))
+                document.cookie = JSON.stringify(this.data)
+                    + ";second=true" + "; expires=Thu, 18 Dec 2023 12:00:00 UTC";
+                //   + ';path=' + p
+                //         + ';expires=' + d.toUTCString();
+            }
+
+        }
+        //         document.cookie = "username=" + escape(UniqueID)
+        //+ ";second=true" + "; expires=Thu, 18 Dec 2023 12:00:00 UTC";
+
+        ////////function clearListCookies() {
+        ////////    var cookies = document.cookie.split(";");
+        ////////    for (var i = 0; i < cookies.length; i++) {
+        ////////        var spcook = cookies[i].split("=");
+        ////////        deleteCookie(spcook[0]);
+        ////////    }
+        ////////    function deleteCookie(cookiename) {
+        ////////        var d = new Date();
+        ////////        d.setDate(d.getDate() - 1);
+        ////////        var expires = ";expires=" + d;
+        ////////        var name = cookiename;
+        ////////        //alert(name);
+        ////////        var value = "";
+        ////////        document.cookie = name + "=" + value + expires + "; path=/acc/html";
+        ////////    }
+        ////////    window.location = ""; // TO REFRESH THE PAGE
+        ////////}
+        ////////clearListCookies();
+
+
+
+
+
+        prefs.data.username = "kenny";
+        prefs.data.fullscreen = true;
+        prefs.data.broker = "mqttbroker";
+        prefs.save();
+        var preferences = prefs.load();
+        var b = preferences.broker;
+
+
+
+        ////////// save
+        ////////prefs.data.something = "one"; // save one
+        ////////// ... do other stuff ...
+        ////////prefs.data.another = "two";
+        ////////// ready to store?
+        ////////prefs.save();
+
+
+        ////////// another syntax
+        ////////var to_save = {
+        ////////    one: 1,
+        ////////    two: 2,
+        ////////}
+        ////////prefs.data = to_save;
+        ////////prefs.save();
+
+
+        ////////// delete
+        ////////var date_in_the_past = new Date(2000, 02, 02);
+        ////////prefs.save(date_in_the_past);
+
+
+        ////////// read
+        ////////var what = prefs.load();
+        ////////// load populates prefs.data and also returns
+        ////////alert(what.something);
+        ////////// or ...
+        ////////alert(prefs.data.something);
+
+
+        //var kpf = {};
+        //kpf.username = "KENNY";
+        //var json = JSON.stringify(kpf);
+        //var rrr = JSON.parse(json);
 
 
         SafeAddToListbox("Starting Web Page ...");
@@ -510,6 +616,12 @@
 
         shortcut.add("F9", f9);
         shortcut.add("F10", f10);
+        shortcut.add("Ctrl+F10", function () {
+            displayToast("Control F10");
+        });
+        shortcut.add("Alt+F10", function () {
+            displayToast("Alt F10");
+        });
 
         //////var availableVoices = ["Google US English", "Google US English Female",
         //////    "Google US English Male", "Google UK English Female",
@@ -532,10 +644,18 @@
                 if ('speechSynthesis' in window) {
                     if (voices == null) {
                         voices = window.speechSynthesis.getVoices();
+                        for (var i = 0; i < voices.length; i++) {
+                            SafeAddToListbox("Voice: " + voices[i].name);
+                            //	console.log(voices[i].name)
+                        }
                     }
                     else {
                         if (voices.length == 0) {
                             voices = window.speechSynthesis.getVoices();
+                            for (var i = 0; i < voices.length; i++) {
+                                SafeAddToListbox("Voice: " + voices[i].name);
+                                //	console.log(voices[i].name)
+                            }
                         }
                     }
                     var speech = new SpeechSynthesisUtterance(s);
@@ -555,6 +675,9 @@
                         if (found == false) {
                             displayToast("Could Not Find:" + voiceName);
                         }
+                    }
+                    else {
+                        SafeAddToListbox("No Voices Available");
                     }
 
                     speech.volume = globalVolume;
@@ -709,7 +832,7 @@
 
             if (AudioContext) {
                 // Do whatever you want using the Web Audio API
-                context = new AudioContext;
+                context = new AudioContext();
                 audioVolume = context.createGain();
                 context.onstatechange = function () {
                     SafeAddToListbox("Audio Context State Changed: " + context.state);
@@ -775,33 +898,41 @@
             displayToast("Double-Click For Menu");
         }
 
-        //////document.addEventListener('touchstart', function () {
-        //////    SafeAddToListbox("touch start");
-        //////}, false);
+        document.addEventListener('touchstart', function () {
+            SafeAddToListbox("touch start");
+        }, false);
 
-        //////document.addEventListener('touchend', function () {
-        //////    SafeAddToListbox("touch end");
-        //////}, false);
+        document.addEventListener('touchend', function () {
+            SafeAddToListbox("touch end");
+            playSoftClick();
+            //if ($('#dialog').dialog('isOpen') == false) {
+            displayDialog();
+            //}
+        }, false);
 
-        //////window.addEventListener('click', function () {
-        //////    SafeAddToListbox("mouse click");
-        //////}, false);
+        window.addEventListener('click', function () {
+            SafeAddToListbox("mouse click");
+        }, false);
 
-        //////document.addEventListener('mousedown', function () {
-        //////    SafeAddToListbox("mouse down");
-        //////}, false);
+        document.addEventListener('mousedown', function () {
+            SafeAddToListbox("mouse down");
+        }, false);
+
+
+
+
+
+
 
         window.addEventListener('dblclick', function (e) {
             var al = document.getElementById('kenny');
             al.focus();
-            //window.focus();
             displayDialog();
-            //tester();
         });
 
 
 
-        let deferredPrompt;
+        //let deferredPrompt;
 
         //////window.addEventListener('beforeinstallprompt', (e) => {
         //////    // Prevent the mini-infobar from appearing on mobile
@@ -858,7 +989,9 @@
 
 
         function displayDialog() {
-            $("#dialog").dialog({
+
+
+            $("div#dialog").dialog({
                 autoOpen: false,
                 //width: "33%",
                 //maxWidth: "768px",
@@ -885,9 +1018,15 @@
                 document.cookie = "username=" + escape(UniqueID) + ";second=true" + "; expires=Thu, 18 Dec 2023 12:00:00 UTC";
                 //document.cookie = "expires=" + exp.toUTCString() + ";"
             });
+
+
+
             $('.myInput').val(UniqueID);
             SafeAddToListbox("In displayDialog -- should only be when displayed");
             $("#dialog").dialog("open");
+            ////theDialog.dialog("open");
+            //var theDialog = $("#dialog").dialog(opt);
+            //theDialog.dialog("open");
         }
 
 
@@ -1214,15 +1353,20 @@
             // Decode asynchronously
 
             SafeAddToListbox("Start playMp3Buffer onLoad");
-            context.decodeAudioData(mbuffer,
-                function (buffer) {
-                    SafeAddToListbox("1. Got Data Len: " + buffer.length);
-                    playSound(buffer);
-                },
-                function (e) {
-                    SafeAddToListbox("Got Error: " + e.err);
-                }
-            );
+            try {
+                context.decodeAudioData(mbuffer,
+                    function (buffer) {
+                        SafeAddToListbox("1. Got Data Len: " + buffer.length);
+                        playSound(buffer);
+                    },
+                    function (e) {
+                        SafeAddToListbox("Got Error: " + e.err);
+                    }
+                );
+            }
+            catch (err) {
+                SafeAddToListbox("decodeAudio: " + err);
+            }
         }
 
 
@@ -1243,20 +1387,27 @@
         function playSound(buffer) {
             if (context != null) {
                 try {
-
+                    SafeAddToListbox("playSound(buffer)");
                     //context.resume();
-                    var source = context.createBufferSource(); // creates a sound source
+                    var myContext = new AudioContext();
+                    var source = myContext.createBufferSource(); // creates a sound source
                     source.buffer = buffer;                    // tell the source which sound to play
-                    audioVolume.connect(context.destination);
+                    if (true) {
+                        source.connect(myContext.destination);
+                        source.start(0);
+                        return;
+                    }
+                    else {
+                        audioVolume.connect(myContext.destination);
 
-                    source.connect(audioVolume);
-                    audioVolume.connect(context.destination);
-                    //source.connect(context.destination);       // connect the source to the context's destination (the speakers)
-                    source.start(0);                           // play the source now
-
+                        source.connect(audioVolume);
+                        audioVolume.connect(myContext.destination);
+                        //source.connect(context.destination);       // connect the source to the context's destination (the speakers)
+                        source.start(0);                           // play the source now
+                    }
 
                     setTimeout(function () {
-                        var st = context.state;
+                        var st = context2.state;
                         SafeAddToListbox("Audio State: " + st);
                         if (st != "running") {
                             displayToast("Audio Disabled, Click Anywhere To Enable");
@@ -1264,8 +1415,11 @@
                     }, 500);
                 }
                 catch (err) {
-                    displayToast("Audio Disabled, Click Anywhere To Enable");
+                    displayToast("Error: Audio Disabled, Click Anywhere To Enable");
                 }
+            }
+            else {
+                SafeAddToListbox("context is null");
             }
         }
 
@@ -1413,26 +1567,33 @@
 
         function playURL(url) {
             //return;
+            //context.resume();
             SafeAddToListbox("in playURL: " + url);
             //--------
             //if (url.startsWith("mqtt://") == false) {
             //    url = "mqtt://" + url;
             //}
             ////kennyFisher(url);
+            
             kennyFisher(url, function (png) { //playURL
                 SafeAddToListbox("2. In Callback PlayURL    Len: " + png.length);
                 if (png.length > 0) {
-                    var buff = byteToUint8Array(png)
-                    context.decodeAudioData(buff,
-                        function (buffer) {
-                            SafeAddToListbox("2. Got Data Len: " + buffer.length);
-                            playSound(buffer);
-                        },
-                        function (e) {
-                            SafeAddToListbox("Got Error PlayURL: " + e.err);
-                        }
+                    try {
+                        var buff = byteToUint8Array(png)
+                        context.decodeAudioData(buff,
+                            function (buffer) {
+                                SafeAddToListbox("2. Got Data Len: " + buffer.length);
+                                playSound(buffer);
+                            },
+                            function (e) {
+                                SafeAddToListbox("Got Error PlayURL: " + e.err);
+                            }
 
-                    );
+                        );
+                    }
+                    catch (err) {
+                        SafeAddToListbox("playURL: " + err);
+                    }
                 }
             });
             // ---------
@@ -2114,7 +2275,7 @@
 
 
 <body id="mainBody">
-    Kenny Fisher this is the latest -- 1166
+    Kenny Fisher this is the latest -- 1166 - wed
     <!--<div id="buttons">
         <h1>-->
     <!--Stock Market MQTT Monitor-->
@@ -2157,7 +2318,7 @@
     <div id="dialog" title="Commands" style="display:none">
         <p>Use Buttons To Control.</p>
         <button type="button" onclick="displayConnections()">Connections</button>
-        <button type="button" onclick="connectToMQTT()">Connect</button>
+        <!--<button type="button" onclick="connectToMQTT()">Connect</button>-->
 
         <button type="button" onclick="displaySpreadsheet()">Spreadsheet</button>
         <button type="button" onclick="displayGauges()">Gauges</button>
@@ -2169,15 +2330,13 @@
         <button type="button" onclick="playCorona()">Play Corona</button>
 
         <button type="button" onclick="displaySlideshow()">Slideshow</button>
-        <button type="button" onclick="stopAudio()">Stop Audio</button>
-
-        <button type="button" onclick="volumeUp()">Volume UP</button>
-        <button type="button" onclick="volumeDown()">Volume DOWN</button>
+        <!--<button type="button" onclick="stopAudio()">Stop Audio</button>-->
+        <!--   <button type="button" onclick="volumeUp()">Volume UP</button>-->
+        <!--   <button type="button" onclick="volumeDown()">Volume DOWN</button>-->
 
         <button type="button" onclick="sayCondition()">Say Condition</button>
         <button type="button" onclick="toggleImages()">Toggle</button>
-        <button type="button" onclick="disconnectMQTT()">Disconnect</button>
-
+        <!--<button type="button" onclick="disconnectMQTT()">Disconnect</button>-->
         <!--    <button type="button" onclick="MQTTconnect()">Connect</button>-->
         <!--     <button type="button" onclick="getMqttBinary()">Get MQTT Binary</button>-->
         <!--    <button type="button" onclick="displayConnections()">Connections</button>-->
@@ -2235,7 +2394,7 @@
             $('#picOne').fadeOut(1500);
             $('#picTwo').fadeOut(1500);
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                               ////////////////        //var yyy = bytes.length;
+            ////////////////        //var yyy = bytes.length;
 
 
             /*
@@ -2339,7 +2498,7 @@
                         });
 
             */
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        //	saySomething("Mu ha ha! Works now.");
+            //	saySomething("Mu ha ha! Works now.");
 
 
 
@@ -2408,8 +2567,12 @@
                        return false;
                    }
            */
-
-
+            ////if (preferences.fullscreen) {
+            ////    $(".imgClass").css({ "top": "0px" });
+            ////    $(".imgClass").css({ "left": "0px" });
+            ////    $(".imgClass").css({ "width": "100%" });
+            ////    $(".imgClass").css({ "height": "100%" });
+            ////}
 
         </script>
     </div>
