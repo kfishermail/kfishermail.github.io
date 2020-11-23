@@ -1457,7 +1457,8 @@
 
 
 
-        function displayToast(msg) {
+        function displayToast(msg, timeMs) {
+            if (!timeMs) timeMs = 5000;
             //SafeAddToListbox("Got Toast: " + msg);
             if (msg.replaceAll == null) {
                 SafeAddToListbox("Could Not Find replaceAll");
@@ -1479,7 +1480,7 @@
                 setTimeout(function () {
                     element.innerHTML = '';
                     element.style.visibility = 'hidden';
-                }, 5000);
+                }, timeMs);
             }
             else {
                 SafeAddToListbox("Element is null");
@@ -2188,7 +2189,7 @@
                 s = safeaddCounter + " " + s;
                 console.log(s);
                 try {
-//                    mainConnection.SendMessage("safeadd/" + UniqueID + "/webviewer", s);
+                    //                    mainConnection.SendMessage("safeadd/" + UniqueID + "/webviewer", s);
                     mainConnection.SendMessage("safeadd/" + UniqueID + "/" + topic, s);
                 }
                 catch (err) {
@@ -2223,35 +2224,35 @@
 
             SafeAddToListbox("bluetooth", "Testing Bluetooth");
             if (!bluetooth) {
-                SafeAddToListbox("bluetooth","Bluetooth Not Available");
+                SafeAddToListbox("bluetooth", "Bluetooth Not Available");
             } else {
                 //return;
 
                 (async () => {
-                    SafeAddToListbox("bluetooth","scanning...");
+                    SafeAddToListbox("bluetooth", "scanning...");
 
                     //while (true) {
-                        try {
-                            SafeAddToListbox("bluetooth","...");
+                    try {
+                        SafeAddToListbox("bluetooth", "...");
 
-                            const device = await bluetooth.requestDevice({
-                                //filters: [{ acceptAllDevices: true }]
-                                acceptAllDevices: true
-                            }).then(function (device) {
-                                SafeAddToListbox("bluetooth",`new Found device: ${device.name}`);
-                                device.addEventListener('onadvertisementreceived', event => {
-                                    SafeAddToListbox("bluetooth","EV");
-                                });
-
-                            }).catch(function (mess) {
-                                SafeAddToListbox("bluetooth","MESS: " + mess);
+                        const device = await bluetooth.requestDevice({
+                            //filters: [{ acceptAllDevices: true }]
+                            acceptAllDevices: true
+                        }).then(function (device) {
+                            SafeAddToListbox("bluetooth", `new Found device: ${device.name}`);
+                            device.addEventListener('onadvertisementreceived', event => {
+                                SafeAddToListbox("bluetooth", "EV");
                             });
 
-                        } catch (error) {
-                            SafeAddToListbox("bluetooth",error);
-                            alert(error);
-                            process.exit();
-                        }
+                        }).catch(function (mess) {
+                            SafeAddToListbox("bluetooth", "MESS: " + mess);
+                        });
+
+                    } catch (error) {
+                        SafeAddToListbox("bluetooth", error);
+                        alert(error);
+                        process.exit();
+                    }
                     //}
                 })();
             }
@@ -2326,6 +2327,14 @@
             SafeAddToListbox("Done getMqttBinary ----------------------------");
         }
 
+        function displayProtocol() {
+            playSoftClick();
+            var oStr = "";
+        
+            oStr += "HTTP Secure: " + window.isSecureContext;
+            oStr += "\nProtocol: " + window.location.protocol;
+            displayToast(oStr);
+        }
         function displayConnections() {
             playSoftClick();
             var oStr = "mqtt: ";
@@ -2359,7 +2368,6 @@
             ////SafeAddToListbox(result);
             //document.cookie = "username=John Doe; expires=Thu, 18 Dec 2023 12:00:00 UTC";
         }
-
         function toggleImages() {
             //    top: 10 %;
             //    left: 10 %;
@@ -2523,6 +2531,7 @@
     <div id='alrt' class="alertClass" style="visibility:hidden"></div>
     <div id="dialog" title="Commands" style="display:none">
         <p>Use Buttons To Control.</p>
+        <button type="button" onclick="displayProtocol()">Protocol</button>
         <button type="button" onclick="displayConnections()">Connections</button>
         <!--<button type="button" onclick="connectToMQTT()">Connect</button>-->
 
@@ -2604,7 +2613,7 @@
             createAudioContext();
 
 
-                                                                                                                                            ////////////////        //var yyy = bytes.length;
+                                                                                                                                                    ////////////////        //var yyy = bytes.length;
 
 
             /*
@@ -2708,7 +2717,7 @@
                         });
 
             */
-                                                                                                                                            //	saySomething("Mu ha ha! Works now.");
+                                                                                                                                                    //	saySomething("Mu ha ha! Works now.");
 
 
 
@@ -2777,12 +2786,12 @@
                        return false;
                    }
            */
-                                                                                                                                            ////if (preferences.fullscreen) {
-                                                                                                                                            ////    $(".imgClass").css({ "top": "0px" });
-                                                                                                                                            ////    $(".imgClass").css({ "left": "0px" });
-                                                                                                                                            ////    $(".imgClass").css({ "width": "100%" });
-                                                                                                                                            ////    $(".imgClass").css({ "height": "100%" });
-                                                                                                                                            ////}
+                                                                                                                                                    ////if (preferences.fullscreen) {
+                                                                                                                                                    ////    $(".imgClass").css({ "top": "0px" });
+                                                                                                                                                    ////    $(".imgClass").css({ "left": "0px" });
+                                                                                                                                                    ////    $(".imgClass").css({ "width": "100%" });
+                                                                                                                                                    ////    $(".imgClass").css({ "height": "100%" });
+                                                                                                                                                    ////}
 
         </script>
     </div>
