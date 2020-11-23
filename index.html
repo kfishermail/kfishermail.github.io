@@ -90,7 +90,7 @@
 
         #messages {
             background-color: yellow;
-            font-size: 3;
+            font-size: 3px;
             font-weight: bold;
             line-height: 140%;
             visibility: visible;
@@ -98,7 +98,7 @@
 
         #status {
             background-color: red;
-            font-size: 4;
+            font-size: 4px;
             font-weight: bold;
             color: white;
             line-height: 140%;
@@ -142,8 +142,9 @@
 
 
     <script type="text/javascript">
-        var mqtt;
-        var mqttFTP = null;
+        //var mqtt;
+        //var mqttFTP = null;
+        var safeaddCounter = 100;
         var reconnectTimeout = 2000;
         //var MQTThost = "mqttbroker";
         //var MQTThost = "broker.hivemq.com";
@@ -154,7 +155,8 @@
                 var MQTThost = "mqttbroker";
                 break;
             default:
-                var MQTThost = "broker.hivemq.com";
+                //var MQTThost = "broker.hivemq.com";
+                var MQTThost = "mqttbroker";
                 break;
         }
         ////if (location.hostname == "localhost" || location.hostname == "mrouter") {
@@ -581,7 +583,8 @@
         }
         function f6() {
             playSoftClick();
-            KPFSendMessage("function", "say status");
+            //KPFSendMessage("function", "say status");
+            mainConnection.SendMessage("function", "say status");
         }
 
 
@@ -628,8 +631,10 @@
         //////    "Google UK English Male","Microsoft Anna - English (United States)",
         //////]
 
-        var availableVoices = ["Google US English", "Google UK English Female",
-            "Google UK English Male", "Microsoft Anna - English (United States)",
+        var availableVoices = ["Google US English",
+            "Google UK English Female",
+            "Google UK English Male",
+            "Microsoft Anna - English (United States)",
         ]
 
 
@@ -679,7 +684,6 @@
                     else {
                         SafeAddToListbox("No Voices Available");
                     }
-
                     speech.volume = globalVolume;
                     speech.lang = 'en-US';
                     //SafeAddToListbox("TTS: " + s);
@@ -847,7 +851,7 @@
 
 
 
-        createAudioContext();
+        //createAudioContext();
 
 
 
@@ -866,35 +870,11 @@
         //    return true;
         //}
 
-        function disconnectMQTT() {
-            try {
-                if (mqtt) mqtt.disconnect();
-            }
-            catch (err) {
 
-            }
-            try {
-                if (mqttFTP) mqttFTP.disconnect();
-            }
-            catch (err) {
-
-            }
-        }
-        function MQTTconnect() {
-            kpfConnect(MQTThost, port, true);
-        }
-
-        //function startConnect() {
-        //    kpfConnect(MQTThost, port, true);
-        //}
-
-        function connectToMQTT() {
-            MQTTconnect();
-            ConnectmqttFtp();
-        }
+        //==  Event Listeners =====
         window.addEventListener('load', init, false);
         function init() {
-            connectToMQTT();
+            //connectToMQTT();
             displayToast("Double-Click For Menu");
         }
 
@@ -989,8 +969,6 @@
 
 
         function displayDialog() {
-
-
             $("div#dialog").dialog({
                 autoOpen: false,
                 //width: "33%",
@@ -1043,10 +1021,6 @@
 
 
 
-        function tester() {
-
-        }
-
 
         //////document.addEventListener("keydown", event => {
         //////    SafeAddToListbox("KEY: " + event.key);
@@ -1087,175 +1061,379 @@
         //////});
 
 
-        function onConnectionLost(reason) {
-            SafeAddToListbox("Connection Lost: " + reason.errorMessage);
-            //document.getElementById("status_messages").innerHTML = "Connection Lost" + reason.errorMessage;
-            ////////setTimeout(MQTTconnect, reconnectTimeout);
-        }
-        function onFailure(message) {
-            SafeAddToListbox("Connection Failure");
-            //document.getElementById("status_messages").innerHTML = "Connection Failed- Retrying";
-            setTimeout(MQTTconnect, reconnectTimeout);
-        }
-        function onConnect() {
-            // Once a connection has been made, make a subscription and send a message.
-            //document.getElementById("status_messages").innerHTML = "Connected to " + host + " on port " + port;
-            //console.log("on Connect ");
-            SafeAddToListbox("1. System Is Now Connected!!!!!!!!!!!!!!!!!!");
-            //kpfSubscribe()
-            //function kpfSubscribe() {
-            var soptions = {
-                qos: 1,
-            };
-            //mqtt.subscribe("kenny_fisher/#", soptions);
-            mqtt.subscribe("kenny_fisher/+/*/#", soptions);
-            mqtt.subscribe("kenny_fisher/+/" + UniqueID + "/#", soptions);
+        //========  MQTT Objects  ============================================================
 
 
+
+
+        function mqttFtpMessageArrived(r_message) {
+            SafeAddToListbox("Got ftpresponse Message");
+            if (callbackArray.length > 0) {
+                for (i = 0; i < callbackArray.length; i++) {
+                    if (callbackArray[i].response == r_message.destinationName) {
+                        SafeAddToListbox("Got Match");
+                        var tElement = callbackArray[i];
+                        callbackArray.splice(i, 1);
+                        var bytes = r_message.payloadBytes
+                        tElement.callback(bytes);
+                    }
+                }
+            }
         }
 
 
-        function onConnected(recon, url) {
-            SafeAddToListbox("2. System Is Now Connected!!!!!!!!!!!!!!!!!!");
+
+
+
+        function NewGetMQTTFile(fName, callback) {
+            SafeAddToListbox("In NewGetMQTTFile");
+            if (ftpConnection.isConnected() === true) {
+                SafeAddToListbox("In NewGetMQTTFile, true");
+                if (fName.startsWith("mqtt://")) {
+                    fName = fName.substring(7);
+                }
+
+                ftpCounter++;
+                SafeAddToListbox("Get File: " + fName);
+
+
+                var tEntry = {}
+                tEntry.response = "ftpresponse/" + MachineID + "/" + ftpCounter + "/" + fName;
+                tEntry.callback = callback;
+                callbackArray.push(tEntry);
+
+                var dest = "ftprequest/" + MachineID + "/" + ftpCounter + "/" + fName;
+                SafeAddToListbox("Sent: " + dest);
+                ftpConnection.SendMessage(dest, fName);
+            }
         }
-        //////function disconnect() {
-        //////    if (connected_flag == 1)
-        //////        mqtt.disconnect();
-        //////}
-        function displayMessage(s) {
-            s = s + "</br>";
-            try {
-                document.getElementById("out_messages").innerHTML += s;
-                if (row > 15) {
-                    row = 1;
-                    document.getElementById("out_messages").innerHTML = s;
+
+
+
+        var mqttObject = {
+            mqttConnection: 0,
+            Connect: function (host, port, clean_sessions, subTopics, message_processor) {
+                var clientID = "web" + new Date().getTime();
+                this.mqttConnection = new Paho.MQTT.Client(host, port, clientID);
+                var that = this;
+                var options = {
+                    timeout: 3,
+                    cleanSession: clean_sessions,
+                    onSuccess: function () {
+                        SafeAddToListbox("1. System Is Now Connected!!!!!!!!!!!!!!!!!!");
+                        var soptions = {
+                            qos: 1,
+                        };
+                        for (var i = 0; i < subTopics.length; i++) {
+                            that.mqttConnection.subscribe(subTopics[i], soptions);
+                        }
+                    },
+                    onFailure: function () {
+                        SafeAddToListbox("Connection Failure");
+                        setTimeout(MQTTconnect, reconnectTimeout);
+                    },
+                };
+                this.mqttConnection.onConnectionLost = function (reason) {
+                    console.log(reason);
+                };
+                this.mqttConnection.onMessageArrived = function (r_message) {
+                    message_processor(r_message);
+                };
+                SafeAddToListbox("Starting mqtt Connect");
+                try {
+                    this.mqttConnection.connect(options);
+                }
+                catch (err) {
+                    SafeAddToListbox("Connect Error: " + err);
+                }
+            },
+
+            isConnected: function () {
+                return this.mqttConnection.isConnected();
+            },
+
+            SendMessage: function (topic, msg) {
+                if (this.mqttConnection && this.mqttConnection.isConnected() == true) {
+                    var message = new Paho.MQTT.Message(msg);
+                    message.destinationName = topic;
+                    message.qos = 1;
+                    message.retained = false;
+                    try {
+                        this.mqttConnection.send(message);
+                    }
+                    catch (err) {
+                        SafeAddToListbox("mqtt Send Error: " + err);
+                    }
                 }
                 else {
-                    row += 1;
-                }
-            }
-            catch (err) {
-                //document.getElementById("out_messages").innerHTML = err.message;
-            }
-        }
+                    console.log("1 object. mqtt not connected: " + this.mqttConnection.isConnected());
+                    console.log(this.mqttConnection.isConnected());
+                    if (this.mqttConnection) {
+                        console.log("True");
+                    } else {
+                        console.log("False");
 
-        function onMessageArrived(r_message) {
-            parseMQTT(r_message);
-        }
-
-
-
-        function kpfConnect(host, port, clean_sessions) {
-            var clientID = "web" + new Date().getTime();
-            mqtt = new Paho.MQTT.Client(host, port, clientID);
-            var options = {
-                timeout: 3,
-                cleanSession: clean_sessions,
-                onSuccess: onConnect,
-                onFailure: onFailure,
-            };
-            SafeAddToListbox("Got New Client");
-            mqtt.onConnectionLost = onConnectionLost;
-            mqtt.onMessageArrived = onMessageArrived;
-            //mqtt.onConnected = onConnected;
-            ////////////////mqtt.isConnected = onConnected;
-            SafeAddToListbox("Starting mqtt Connect");
-            try {
-                mqtt.connect(options);
-            }
-            catch (err) {
-                SafeAddToListbox("Connect Error: " + err);
-            }
-            return false;
-        }
-
-
-
-        function ConnectmqttFtp() {
-            SafeAddToListbox("mqttFTP Starting Connect");
-            var clientID = "web" + new Date().getTime();
-            mqttFTP = new Paho.MQTT.Client(MQTThost, port, clientID);
-
-
-            // ------------------------
-            var dest = "";
-            mqttFTP.onMessageArrived = function (r_message) {
-                SafeAddToListbox("Got ftpresponse Message");
-                var subTopics = r_message.destinationName.split("/");
-                if (callbackArray.length > 0) {
-                    for (i = 0; i < callbackArray.length; i++) {
-                        if (callbackArray[i].response == r_message.destinationName) {
-                            SafeAddToListbox("Got Match");
-                            var tElement = callbackArray[i];
-                            callbackArray.splice(i, 1);
-                            var bytes = r_message.payloadBytes
-                            tElement.callback(bytes);
-                        }
                     }
                 }
             }
 
-
-            //----------------------------------------
-
-
-
-
-
-
-            var connectOptions = {
-                timeout: 3,
-                cleanSession: true,
-                onSuccess: function (m) {
-                    SafeAddToListbox("mqttFTP - In Connect onSuccess: " + mqttFTP.isConnected());
-                    var suboptions = {
-                        qos: 1,
-                        onSuccess: function () {
-                            //displayToast("Double-Click For Menu");
-                            kennyFisher("mqtt://scrn2.png", function (png) {
-                                if (png.length > 0) {
-                                    var t = "data:image/png;base64," + arrayBufferToBase64(png)
-                                    //document.getElementById("ItemPreview").src = t;
-                                    fadeNextImage(t);
-                                }
-                            });
-                            SafeAddToListbox("mqttFTP - In Subscribe onSuccess 3 mqttFTP");
-                        }
-                    };
-                    //SafeAddToListbox("Subscribe To ftpresponse");
-                    mqttFTP.subscribe("ftpresponse/" + MachineID + "/#", suboptions);
-                },// onConnectedFTP,
-                onFailure: function (m) {
-                    //SafeAddToListbox("onFailure Error");
-                    //console.log("KPF Failure In FTP Connect")
-                },
-            };
-            try {
-                SafeAddToListbox("Starting Connect Process");
-                mqttFTP.onFailure = function () {
-                    SafeAddToListbox("mqttFTP Connect Failure");
-                };
-
-
-
-
-                mqttFTP.onConnectionLost = function (eObj) {
-                    SafeAddToListbox("Lost Connection: " + eObj.errorMessage)
-                };
-                //////////////setTimeout(ConnectmqttFtp, reconnectTimeout);
-
-                //mqttFTP.isConnected = function () { SafeAddToListbox("mqttFTP Connected"); };
-                mqttFTP.connect(connectOptions);
-            }
-            catch (err) {
-                SafeAddToListbox("Connection ERROR: " + err.message);
-            }
-            //mqttFTP.connect(connectOptions);
-            ////console.log("Waiting For Connection");
-            SafeAddToListbox("Returning");
         }
 
 
+        var mainConnection = Object.create(mqttObject);
+        mainConnection.Connect("mqttbroker", port, true, ["kenny_fisher/+/*/#", "kenny_fisher/+/" + UniqueID + "/#"], parseMQTT);
+        var ftpConnection = Object.create(mqttObject);
+        ftpConnection.Connect("mqttbroker", port, true, ["ftpresponse/" + MachineID + "/#"], mqttFtpMessageArrived);
+
+
+
+
+
+        //////var message = new Paho.MQTT.Message(fName);
+        //////message.destinationName = dest;
+        //////message.qos = 1;
+        //////message.retained = false;
+        //////try {
+        //////    mqttFTP.send(message);
+        //////}
+        //////catch (err) {
+        //////    SafeAddToListbox("mqttFTP Send Error: " + err);
+        //////}
+        //c1.Connect("mqttbroker", port, true, ["kenny_fisher/+/*/#", "kenny_fisher/+/" + UniqueID + "/#"], parseMQTT);
+        //var tt = new setup();
+
+        ////function setup() {
+        ////    var c1 = new mqttObject();
+        ////    c1.Connect("mqttbroker", port, true, ["kenny_fisher/+/*/#", "kenny_fisher/+/" + UniqueID + "/#"], parseMQTT);
+        ////    var c2 = new mqttObject();
+        ////    c2.Connect("mqttbroker", port, true, ["ftpresponse/" + MachineID + "/#"], mqttFtpMessageArrived);
+        ////}
+
+        //===   del -----------------------------------------------------------------------------------
+        ////function tester(m) {
+        ////    SafeAddToListbox("Got Message ===========================================");
+        ////    parseMQTT(m);
+        ////}
+
+        //function connectToMQTT() {
+        //    ////MQTTconnect();
+        //    //ConnectmqttFtp();
+        //}
+
+
+        function MQTTconnect() {
+            ////    kpfConnect(MQTThost, port, true);
+        }
+        //////function onConnectionLost(reason) {
+        //////    SafeAddToListbox("Connection Lost: " + reason.errorMessage);
+        //////    //document.getElementById("status_messages").innerHTML = "Connection Lost" + reason.errorMessage;
+        //////    ////////setTimeout(MQTTconnect, reconnectTimeout);
+        //////}
+        //////function onFailure(message) {
+        //////    SafeAddToListbox("Connection Failure");
+        //////    //document.getElementById("status_messages").innerHTML = "Connection Failed- Retrying";
+        //////    setTimeout(MQTTconnect, reconnectTimeout);
+        //////}
+        //////function onConnect() {
+        //////    // Once a connection has been made, make a subscription and send a message.
+        //////    //document.getElementById("status_messages").innerHTML = "Connected to " + host + " on port " + port;
+        //////    //console.log("on Connect ");
+        //////    SafeAddToListbox("1. System Is Now Connected!!!!!!!!!!!!!!!!!!");
+        //////    //kpfSubscribe()
+        //////    //function kpfSubscribe() {
+        //////    var soptions = {
+        //////        qos: 1,
+        //////    };
+        //////    //mqtt.subscribe("kenny_fisher/#", soptions);
+        //////    mqtt.subscribe("kenny_fisher/+/*/#", soptions);
+        //////    mqtt.subscribe("kenny_fisher/+/" + UniqueID + "/#", soptions);
+        //////}
+
+
+        ////function onConnected(recon, url) {
+        ////    SafeAddToListbox("2. System Is Now Connected!!!!!!!!!!!!!!!!!!");
+        ////}
+        //////function disconnect() {
+        //////    if (connected_flag == 1)
+        //////        mqtt.disconnect();
+        //////}
+
+        //////function onMessageArrived(r_message) {
+        //////    //parseMQTT(r_message);
+        //////}
+
+
+
+        //////function kpfConnect(host, port, clean_sessions) {
+        //////    var clientID = "web" + new Date().getTime();
+        //////    mqtt = new Paho.MQTT.Client(host, port, clientID);
+        //////    var options = {
+        //////        timeout: 3,
+        //////        cleanSession: clean_sessions,
+        //////        onSuccess: onConnect,
+        //////        onFailure: onFailure,
+        //////    };
+        //////    SafeAddToListbox("Got New Client");
+        //////    mqtt.onConnectionLost = onConnectionLost;
+        //////    mqtt.onMessageArrived = onMessageArrived;
+        //////    //mqtt.onConnected = onConnected;
+        //////    ////////////////mqtt.isConnected = onConnected;
+        //////    SafeAddToListbox("Starting mqtt Connect");
+        //////    try {
+        //////        mqtt.connect(options);
+        //////    }
+        //////    catch (err) {
+        //////        SafeAddToListbox("Connect Error: " + err);
+        //////    }
+        //////    return false;
+        //////}
+
+
+
+        //////function KPFSendMessage(topic, msg) {
+        //////    if (mqtt && mqtt.isConnected() == true) {
+        //////        //return;
+        //////        message = new Paho.MQTT.Message(msg);
+        //////        message.destinationName = topic;
+        //////        message.qos = 1;
+        //////        message.retained = false;
+        //////        try {
+        //////            mqtt.send(message);
+        //////        }
+        //////        catch (err) {
+        //////            SafeAddToListbox("mqtt Send Error: " + err);
+        //////        }
+        //////    }
+        //////    else {
+        //////        SafeAddToListbox("101. mqttFTP not connected");
+        //////    }
+        //////}
+
+
+
+        //////function ConnectmqttFtp() {
+        //////    SafeAddToListbox("mqttFTP Starting Connect");
+        //////    var clientID = "web" + new Date().getTime();
+        //////    mqttFTP = new Paho.MQTT.Client(MQTThost, port, clientID);
+
+
+        //////    // ------------------------
+        //////    var dest = "";
+        //////    mqttFTP.onMessageArrived = function (r_message) {
+        //////        SafeAddToListbox("Got ftpresponse Message");
+        //////        var subTopics = r_message.destinationName.split("/");
+        //////        if (callbackArray.length > 0) {
+        //////            for (i = 0; i < callbackArray.length; i++) {
+        //////                if (callbackArray[i].response == r_message.destinationName) {
+        //////                    SafeAddToListbox("Got Match");
+        //////                    var tElement = callbackArray[i];
+        //////                    callbackArray.splice(i, 1);
+        //////                    var bytes = r_message.payloadBytes
+        //////                    tElement.callback(bytes);
+        //////                }
+        //////            }
+        //////        }
+        //////    }
+        //////    var connectOptions = {
+        //////        timeout: 3,
+        //////        cleanSession: true,
+        //////        onSuccess: function (m) {
+        //////            SafeAddToListbox("mqttFTP - In Connect onSuccess: " + mqttFTP.isConnected());
+        //////            var suboptions = {
+        //////                qos: 1,
+        //////                onSuccess: function () {
+        //////                    kennyFisher("mqtt://scrn2.png", function (png) {
+        //////                        if (png.length > 0) {
+        //////                            var t = "data:image/png;base64," + arrayBufferToBase64(png)
+        //////                            fadeNextImage(t);
+        //////                        }
+        //////                    });
+        //////                    SafeAddToListbox("mqttFTP - In Subscribe onSuccess 3 mqttFTP");
+        //////                }
+        //////            };
+        //////            //SafeAddToListbox("Subscribe To ftpresponse");
+        //////            mqttFTP.subscribe("ftpresponse/" + MachineID + "/#", suboptions);
+        //////        },
+        //////        onFailure: function (m) {
+        //////            //SafeAddToListbox("onFailure Error");
+        //////            //console.log("KPF Failure In FTP Connect")
+        //////        },
+        //////    };
+        //////    try {
+        //////        SafeAddToListbox("Starting Connect Process");
+        //////        mqttFTP.onFailure = function () {
+        //////            SafeAddToListbox("mqttFTP Connect Failure");
+        //////        };
+        //////        mqttFTP.onConnectionLost = function (eObj) {
+        //////            SafeAddToListbox("Lost Connection: " + eObj.errorMessage)
+        //////        };
+        //////        mqttFTP.connect(connectOptions);
+        //////    }
+        //////    catch (err) {
+        //////        SafeAddToListbox("Connection ERROR: " + err.message);
+        //////    }
+        //////}
+
+
+
+        ////function GetMQTTFile(fName, callback) {
+        ////    ////if (ftpConnection && ftpConnection.isConnected() == true) {
+
+        ////    ////    if (fName.startsWith("mqtt://")) {
+        ////    ////        fName = fName.substring(7);
+        ////    ////    }
+
+        ////    ////    ftpCounter++;
+        ////    ////    SafeAddToListbox("Get File: " + fName);
+        ////    ////    dest = "ftprequest/" + MachineID + "/" + ftpCounter + "/" + fName;
+
+
+
+        ////    ////    var tEntry = {}
+        ////    ////    tEntry.response = "ftpresponse/" + MachineID + "/" + ftpCounter + "/" + fName;
+        ////    ////    tEntry.callback = callback;
+        ////    ////    callbackArray.push(tEntry);
+
+
+        ////    ////    SafeAddToListbox("Sent: " + dest);
+        ////    ////    message.destinationName = dest;
+        ////    ////    message.qos = 1;
+        ////    ////    message.retained = false;
+        ////    ////    try {
+        ////    ////        mqttFTP.send(message);
+        ////    ////    }
+        ////    ////    catch (err) {
+        ////    ////        SafeAddToListbox("mqttFTP Send Error: " + err);
+        ////    ////    }
+        ////    ////}
+        ////    ////else {
+        ////    ////    SafeAddToListbox("1. mqttFTP not connected");
+        ////    ////}
+        ////}
+
+
+
+
+
+
+        // === del
+        //========= End Of MQTT Objects  ==========================================================
+
+        //////function disconnectMQTT() {
+        //////    try {
+        //////        if (mqtt) mqtt.disconnect();
+        //////    }
+        //////    catch (err) {
+
+        //////    }
+        //////    try {
+        //////        if (mqttFTP) mqttFTP.disconnect();
+        //////    }
+        //////    catch (err) {
+
+        //////    }
+        //////}
+        //========= End Of MQTT Objects  ==========================================================
 
         var Image1Visible = true;
         function fadeNextImage(tImg) {
@@ -1309,38 +1487,6 @@
         }
 
 
-        function arrayBufferToBase64(buffer) {
-            var binary = '';
-            var bytes = new Uint8Array(buffer);
-            var len = bytes.byteLength;
-            for (var i = 0; i < len; i++) {
-                binary += String.fromCharCode(bytes[i]);
-            }
-            return window.btoa(binary);
-        }
-
-
-
-
-        function KPFSendMessage(topic, msg) {
-            if (mqtt && mqtt.isConnected() == true) {
-                //return;
-                message = new Paho.MQTT.Message(msg);
-                message.destinationName = topic;
-                message.qos = 1;
-                message.retained = false;
-                try {
-                    mqtt.send(message);
-                }
-                catch (err) {
-                    SafeAddToListbox("mqtt Send Error: " + err);
-                }
-            }
-            else {
-                console.log("1. mqttFTP not connected");
-            }
-        }
-
 
 
 
@@ -1368,6 +1514,43 @@
                 SafeAddToListbox("decodeAudio: " + err);
             }
         }
+        function playURL(url) {
+            //return;
+            //context.resume();
+            SafeAddToListbox("in playURL: " + url);
+            //--------
+            //if (url.startsWith("mqtt://") == false) {
+            //    url = "mqtt://" + url;
+            //}
+            ////kennyFisher(url);
+
+            kennyFisher(url, function (png) { //playURL
+                SafeAddToListbox("2. In Callback PlayURL --   Len: " + png.length);
+                if (png.length > 0) {
+                    SafeAddToListbox("Length > 0");
+                    try {
+                        var buff = byteToUint8Array(png)
+                        SafeAddToListbox("Call decodeAudioBuffer");
+                        context.decodeAudioData(buff,
+                            function (buffer) {
+                                SafeAddToListbox("2. Got Data Len: " + buffer.length);
+                                SafeAddToListbox("------------------------------------------");
+                                playSound(buffer);
+                            },
+                            function (e) {
+                                SafeAddToListbox("Got Error PlayURL: " + e.err);
+                            }
+
+                        );
+                    }
+                    catch (err) {
+                        SafeAddToListbox("playURL: " + err);
+                    }
+                }
+            });
+            // ---------
+        }
+
 
 
         //chrome --user-data-dir=$(mktemp -d) --kiosk
@@ -1385,29 +1568,33 @@
         //This allows you to test your website as if user were strongly
         //engaged with your site and playback autoplay would be always allowed.
         function playSound(buffer) {
+            SafeAddToListbox("playSound Before try");
             if (context != null) {
                 try {
-                    SafeAddToListbox("playSound(buffer)");
-                    //context.resume();
+                    SafeAddToListbox("playSound(buffer) -- kpf");
+                    context.resume();
                     var myContext = new AudioContext();
+
+                    //createAudioContext(); // need this, wont work without
+                    myContext = context;
                     var source = myContext.createBufferSource(); // creates a sound source
                     source.buffer = buffer;                    // tell the source which sound to play
-                    if (true) {
+                    if (false) {
                         source.connect(myContext.destination);
                         source.start(0);
                         return;
                     }
                     else {
                         audioVolume.connect(myContext.destination);
-
                         source.connect(audioVolume);
                         audioVolume.connect(myContext.destination);
                         //source.connect(context.destination);       // connect the source to the context's destination (the speakers)
                         source.start(0);                           // play the source now
                     }
+                    SafeAddToListbox("setTimeout -- kpf");
 
                     setTimeout(function () {
-                        var st = context2.state;
+                        var st = context.state;
                         SafeAddToListbox("Audio State: " + st);
                         if (st != "running") {
                             displayToast("Audio Disabled, Click Anywhere To Enable");
@@ -1416,6 +1603,7 @@
                 }
                 catch (err) {
                     displayToast("Error: Audio Disabled, Click Anywhere To Enable");
+                    displayToast(err);
                 }
             }
             else {
@@ -1424,7 +1612,25 @@
         }
 
 
+        function arrayBufferToBase64(buffer) {
+            var binary = '';
+            var bytes = new Uint8Array(buffer);
+            var len = bytes.byteLength;
+            for (var i = 0; i < len; i++) {
+                binary += String.fromCharCode(bytes[i]);
+            }
+            return window.btoa(binary);
+        }
 
+        function _base64ToArrayBuffer(base64) {
+            var binary_string = window.atob(base64);
+            var len = binary_string.length;
+            var bytes = new Uint8Array(len);
+            for (var i = 0; i < len; i++) {
+                bytes[i] = binary_string.charCodeAt(i);
+            }
+            return bytes.buffer;
+        }
 
         function byteToUint8Array(byteArray) {
             var uint8Array = new Uint8Array(byteArray.length);
@@ -1487,41 +1693,7 @@
         //    return;
         //}
 
-        function GetMQTTFile(fName, callback) {
-            if (mqttFTP && mqttFTP.isConnected() == true) {
 
-                if (fName.startsWith("mqtt://")) {
-                    fName = fName.substring(7);
-                }
-
-                var message = new Paho.MQTT.Message(fName);
-                ftpCounter++;
-                SafeAddToListbox("Get File: " + fName);
-                dest = "ftprequest/" + MachineID + "/" + ftpCounter + "/" + fName;
-
-
-
-                var tEntry = {}
-                tEntry.response = "ftpresponse/" + MachineID + "/" + ftpCounter + "/" + fName;
-                tEntry.callback = callback;
-                callbackArray.push(tEntry);
-
-
-                SafeAddToListbox("Sent: " + dest);
-                message.destinationName = dest;
-                message.qos = 1;
-                message.retained = false;
-                try {
-                    mqttFTP.send(message);
-                }
-                catch (err) {
-                    SafeAddToListbox("mqttFTP Send Error: " + err);
-                }
-            }
-            else {
-                SafeAddToListbox("1. mqttFTP not connected");
-            }
-        }
         ////var dest = "";
         ////mqttFTP.onMessageArrived = function (r_message) {
         ////    SafeAddToListbox("Got Message");
@@ -1551,52 +1723,18 @@
 
         function kennyFisher(url, callback) {
             //return;
-            //SafeAddToListbox("in kennyFisher: " + url);
+            SafeAddToListbox("in kennyFisher: " + url);
             if (url.startsWith("mqtt://") == false) {
                 url = "mqtt://" + url;
             }
 
-            GetMQTTFile(url, function (png) {
-                //SafeAddToListbox("1. In Callback Kenny Fisher: " + png.length);
+            NewGetMQTTFile(url, function (png) {
+                SafeAddToListbox("1. In Callback Kenny Fisher: " + png.length);
                 if (png.length == 0) {
                     SafeAddToListbox("************************** Len: 0 **************************");
                 }
                 callback(png);
             });
-        }
-
-        function playURL(url) {
-            //return;
-            //context.resume();
-            SafeAddToListbox("in playURL: " + url);
-            //--------
-            //if (url.startsWith("mqtt://") == false) {
-            //    url = "mqtt://" + url;
-            //}
-            ////kennyFisher(url);
-            
-            kennyFisher(url, function (png) { //playURL
-                SafeAddToListbox("2. In Callback PlayURL    Len: " + png.length);
-                if (png.length > 0) {
-                    try {
-                        var buff = byteToUint8Array(png)
-                        context.decodeAudioData(buff,
-                            function (buffer) {
-                                SafeAddToListbox("2. Got Data Len: " + buffer.length);
-                                playSound(buffer);
-                            },
-                            function (e) {
-                                SafeAddToListbox("Got Error PlayURL: " + e.err);
-                            }
-
-                        );
-                    }
-                    catch (err) {
-                        SafeAddToListbox("playURL: " + err);
-                    }
-                }
-            });
-            // ---------
         }
 
         var SlideShowMode = false;
@@ -1658,25 +1796,13 @@
 
 
 
-        function _base64ToArrayBuffer(base64) {
-            var binary_string = window.atob(base64);
-            var len = binary_string.length;
-            var bytes = new Uint8Array(len);
-            for (var i = 0; i < len; i++) {
-                bytes[i] = binary_string.charCodeAt(i);
-            }
-            return bytes.buffer;
-        }
-
-
-
 
 
 
 
         function parseMQTT(r_message) {
             //return;
-
+            SafeAddToListbox("In parseMQTT ******************************");
 
 
             //var AUTOPLAY = false;
@@ -1701,7 +1827,7 @@
                 q.MachineName = "PWATester";
                 q.HostName = location.hostname;
                 var json = JSON.stringify(q);
-                KPFSendMessage("kenny_fisher/sounds/*/queryresponse", json);
+                mainConnection.SendMessage("kenny_fisher/sounds/*/queryresponse", json);
             }
             else if (Command == "toast") {
                 SafeAddToListbox("Got Toast Message");
@@ -2028,18 +2154,42 @@
 
 
 
-
-
-
-
-
-
-        function SafeAddToListbox(s) {
+        function displayMessage(s) {
+            s = s + "</br>";
             try {
-                s = ftpCounter + " " + s;
+                document.getElementById("out_messages").innerHTML += s;
+                if (row > 15) {
+                    row = 1;
+                    document.getElementById("out_messages").innerHTML = s;
+                }
+                else {
+                    row += 1;
+                }
+            }
+            catch (err) {
+                //document.getElementById("out_messages").innerHTML = err.message;
+            }
+        }
+
+
+
+
+        function SafeAddToListbox(s, t) {
+            var topic = "webviewer";
+            if (!t) {
+                topic = "webviewer";
+            }
+            else {
+                topic = s;
+                s = t;
+            }
+            try {
+                safeaddCounter++;
+                s = safeaddCounter + " " + s;
                 console.log(s);
                 try {
-                    KPFSendMessage("safeadd/" + UniqueID + "/webviewer", s);
+//                    mainConnection.SendMessage("safeadd/" + UniqueID + "/webviewer", s);
+                    mainConnection.SendMessage("safeadd/" + UniqueID + "/" + topic, s);
                 }
                 catch (err) {
                     //alert(err);
@@ -2057,11 +2207,64 @@
         }
 
 
+        //**************************************************************************************
+        function ScanBluetooth() {
+            if (navigator) {
+                SafeAddToListbox("bluetooth", "navigator not null");
+            } else {
+                SafeAddToListbox("bluetooth", "navigator is null");
+            }
+            if (navigator.bluetooth) {
+                SafeAddToListbox("bluetooth", "navigator.bluetooth not null");
+            } else {
+                SafeAddToListbox("bluetooth", "navigator.bluetooth is null");
+            }
+            var bluetooth = navigator.bluetooth;//navigator.bluetooth
 
+            SafeAddToListbox("bluetooth", "Testing Bluetooth");
+            if (!bluetooth) {
+                SafeAddToListbox("bluetooth","Bluetooth Not Available");
+            } else {
+                (async () => {
+                    SafeAddToListbox("bluetooth","scanning...");
+
+                    while (true) {
+                        try {
+                            SafeAddToListbox("bluetooth","...");
+
+                            const device = await bluetooth.requestDevice({
+                                filters: [{ acceptAllDevices: true }]
+                            }).then(function (device) {
+                                SafeAddToListbox("bluetooth",`new Found device: ${device.name}`);
+                                device.addEventListener('onadvertisementreceived', event => {
+                                    SafeAddToListbox("bluetooth","EV");
+                                });
+
+                            }).catch(function (mess) {
+                                SafeAddToListbox("bluetooth","MESS: " + mess);
+                            });
+
+                        } catch (error) {
+                            SafeAddToListbox("bluetooth",error);
+                            alert(error);
+                            process.exit();
+                        }
+                    }
+                })();
+            }
+        }
+
+
+
+
+        //*************************************************************************************
 
         function playDummy() {
             //playURL("dummy.mp3");
             //playURL("http://mqttbroker:81/sda1/dummy.mp3");
+            ScanBluetooth();
+            return;
+
             playSoftClick();
             playURL("d:\\dummy.mp3");
         }
@@ -2104,15 +2307,15 @@
         function stopAudio() {
             playSoftClick();
             if (context) context.close();
+            createAudioContext();
         }
 
 
         function getMqttBinary() {
             playSoftClick();
-            SafeAddToListbox("In getMqttBinary onSuccess: " + mqttFTP.isConnected());
             //kpfConnect("mqttbroker", port, true);
             SafeAddToListbox("In getMqttBinary");
-            GetMQTTFile("mqtt://d:\\Dummy.mp3", function (bindata) {
+            NewGetMQTTFile("mqtt://d:\\Dummy.mp3", function (bindata) {
                 SafeAddToListbox("In getMqttBinary Callback");
                 var ABuffer = byteToUint8Array(bindata);
                 playMp3Buffer(ABuffer);
@@ -2123,14 +2326,14 @@
         function displayConnections() {
             playSoftClick();
             var oStr = "mqtt: ";
-            if (mqtt && mqtt.isConnected() == true) {
+            if (mainConnection && mainConnection.isConnected() == true) {
                 oStr += "Connected";
             }
             else {
                 oStr += "Not Connected";
             }
             oStr += "\nmqttFTP: ";
-            if (mqttFTP && mqttFTP.isConnected() == true) {
+            if (ftpConnection && ftpConnection.isConnected() == true) {
                 oStr += "Connected";
             }
             else {
@@ -2264,7 +2467,7 @@
         function sayCondition() {
             playSoftClick();
             SafeAddToListbox("Sending function message - say status");
-            KPFSendMessage("function", "say status");
+            mainConnection.SendMessage("function", "say status");
         }
 
     </script>
@@ -2275,7 +2478,7 @@
 
 
 <body id="mainBody">
-    Kenny Fisher this is the latest -- 1166 - wed
+    Kenny Fisher this is the latest -- 1166 - thur
     <!--<div id="buttons">
         <h1>-->
     <!--Stock Market MQTT Monitor-->
@@ -2394,7 +2597,11 @@
             $('#picOne').fadeOut(1500);
             $('#picTwo').fadeOut(1500);
 
-            ////////////////        //var yyy = bytes.length;
+
+            createAudioContext();
+
+
+                                                                                                                                            ////////////////        //var yyy = bytes.length;
 
 
             /*
@@ -2498,7 +2705,7 @@
                         });
 
             */
-            //	saySomething("Mu ha ha! Works now.");
+                                                                                                                                            //	saySomething("Mu ha ha! Works now.");
 
 
 
@@ -2567,12 +2774,12 @@
                        return false;
                    }
            */
-            ////if (preferences.fullscreen) {
-            ////    $(".imgClass").css({ "top": "0px" });
-            ////    $(".imgClass").css({ "left": "0px" });
-            ////    $(".imgClass").css({ "width": "100%" });
-            ////    $(".imgClass").css({ "height": "100%" });
-            ////}
+                                                                                                                                            ////if (preferences.fullscreen) {
+                                                                                                                                            ////    $(".imgClass").css({ "top": "0px" });
+                                                                                                                                            ////    $(".imgClass").css({ "left": "0px" });
+                                                                                                                                            ////    $(".imgClass").css({ "width": "100%" });
+                                                                                                                                            ////    $(".imgClass").css({ "height": "100%" });
+                                                                                                                                            ////}
 
         </script>
     </div>
