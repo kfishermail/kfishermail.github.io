@@ -2219,17 +2219,18 @@
             } else {
                 SafeAddToListbox("bluetooth", "navigator.bluetooth is null");
             }
-            return;
             var bluetooth = navigator.bluetooth;//navigator.bluetooth
 
             SafeAddToListbox("bluetooth", "Testing Bluetooth");
             if (!bluetooth) {
                 SafeAddToListbox("bluetooth","Bluetooth Not Available");
             } else {
+                //return;
+
                 (async () => {
                     SafeAddToListbox("bluetooth","scanning...");
 
-                    while (true) {
+                    //while (true) {
                         try {
                             SafeAddToListbox("bluetooth","...");
 
@@ -2250,7 +2251,7 @@
                             alert(error);
                             process.exit();
                         }
-                    }
+                    //}
                 })();
             }
         }
