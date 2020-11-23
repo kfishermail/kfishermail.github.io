@@ -2235,7 +2235,8 @@
                             SafeAddToListbox("bluetooth","...");
 
                             const device = await bluetooth.requestDevice({
-                                filters: [{ acceptAllDevices: true }]
+                                //filters: [{ acceptAllDevices: true }]
+                                acceptAllDevices: true
                             }).then(function (device) {
                                 SafeAddToListbox("bluetooth",`new Found device: ${device.name}`);
                                 device.addEventListener('onadvertisementreceived', event => {
