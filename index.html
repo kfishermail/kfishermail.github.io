@@ -139,7 +139,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
     <link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
 
-
+    <link rel="manifest" href="/manifest.json" />
 
     <script type="text/javascript">
         //var mqtt;
@@ -168,6 +168,11 @@
             useSSL = true;
         }
         if ((window.isSecureContext == true) && (window.location.protocol === "http:")) {
+            useSSL = false;
+        }
+
+
+        if ((window.isSecureContext == true) && (window.location.protocol === "file:")) {
             useSSL = false;
         }
 
@@ -945,35 +950,37 @@
         });
 
 
+// ------------------------ pwa stuff ------------------------------------------------
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            displayToast("In beforeinstallprompt");
+            SafeAddToListbox("beforeinstallprompt");
+            // Prevent the mini-infobar from appearing on mobile
+            e.preventDefault();
+            // Stash the event so it can be triggered later.
+            deferredPrompt = e;
+            // Update UI notify the user they can install the PWA
+            //showInstallPromotion();
+        });
 
-        //let deferredPrompt;
+        window.addEventListener('appinstalled', (evt) => {
+            displayToast("In appinstalled");
+            // Log install to analytics
+            console.log('INSTALL: Success');
+        });
 
-        //////window.addEventListener('beforeinstallprompt', (e) => {
-        //////    // Prevent the mini-infobar from appearing on mobile
-        //////    e.preventDefault();
-        //////    // Stash the event so it can be triggered later.
-        //////    deferredPrompt = e;
-        //////    // Update UI notify the user they can install the PWA
-        //////    //showInstallPromotion();
-        //////});
-
-        //////window.addEventListener('appinstalled', (evt) => {
-        //////    // Log install to analytics
-        //////    console.log('INSTALL: Success');
-        //////});
-
-        //////window.addEventListener('DOMContentLoaded', () => {
-        //////    let displayMode = 'browser tab';
-        //////    if (navigator.standalone) {
-        //////        displayMode = 'standalone-ios';
-        //////    }
-        //////    if (window.matchMedia('(display-mode: standalone)').matches) {
-        //////        displayMode = 'standalone';
-        //////    }
-        //////    // Log launch display mode to analytics
-        //////    console.log('DISPLAY_MODE_LAUNCH:', displayMode);
-        //////});
-
+        window.addEventListener('DOMContentLoaded', () => {
+            let displayMode = 'browser tab';
+            if (navigator.standalone) {
+                displayMode = 'standalone-ios';
+            }
+            if (window.matchMedia('(display-mode: standalone)').matches) {
+                displayMode = 'standalone';
+            }
+            // Log launch display mode to analytics
+            console.log('DISPLAY_MODE_LAUNCH:', displayMode);
+        });
+        //-----------------------------------------------------------
 
         ////function displayDialog() {
 
