@@ -951,6 +951,30 @@
 
 
 // ------------------------ pwa stuff ------------------------------------------------
+
+
+        //if ('serviceWorker' in navigator) {
+        //    window.addEventListener('load', function () {
+        //        navigator.serviceWorker.register('/sw.js').then(function (registration) {
+        //            // Registration was successful
+        //            console.log('ServiceWorker registration successful with scope: ', registration.scope);
+        //        }, function (err) {
+        //            // registration failed :(
+        //            console.log('ServiceWorker registration failed: ', err);
+        //        });
+        //    });
+        //}
+
+        //Now you can check that a service worker is
+        //enabled by going to
+        //chrome://inspect/#service-workers and looking for your site
+        //chrome://serviceworker-internals
+
+
+
+
+
+
         let deferredPrompt;
         window.addEventListener('beforeinstallprompt', (e) => {
             displayToast("In beforeinstallprompt");
