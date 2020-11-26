@@ -160,7 +160,23 @@
                 MQTThost = "mqttbroker";
                 break;
         }
-       
+
+
+        var useSSL = false;
+
+        if ((window.isSecureContext == true) && (window.location.protocol === "https:")) {
+            useSSL = true;
+        }
+        if ((window.isSecureContext == true) && (window.location.protocol === "http:")) {
+            useSSL = false;
+        }
+ 
+
+
+
+
+
+
         var row = 0;
         var ftpCounter = 100;
 
@@ -870,7 +886,7 @@
         window.addEventListener('load', init, false);
         function init() {
             //connectToMQTT();
-            displayToast("Double-Click For Menu");
+            displayToast("Double-Click For Menu, SSL = " + useSSL);
         }
 
         document.addEventListener('touchstart', function () {
@@ -1061,6 +1077,7 @@
                 this.mqttConnection = new Paho.MQTT.Client(host, port, clientID);
                 var that = this;
                 var options = {
+                    useSSL: false,
                     timeout: 3,
                     cleanSession: clean_sessions,
                     onSuccess: function () {
@@ -1085,6 +1102,7 @@
                 };
                 SafeAddToListbox("Starting mqtt Connect");
                 try {
+                    options.useSSL = true;
                     this.mqttConnection.connect(options);
                 }
                 catch (err) {
