@@ -141,6 +141,20 @@
 
     <link rel="manifest" href="/manifest.json" />
 
+
+
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js');
+        };
+    </script>
+
+
+
+
+
+
     <script type="text/javascript">
         //var mqtt;
         //var mqttFTP = null;
@@ -950,7 +964,7 @@
         });
 
 
-// ------------------------ pwa stuff ------------------------------------------------
+        // ------------------------ pwa stuff ------------------------------------------------
 
 
         //if ('serviceWorker' in navigator) {
