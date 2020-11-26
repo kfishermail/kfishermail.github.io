@@ -12,7 +12,18 @@
   "orientation": "any",
   "related_applications": [],
   "prefer_related_applications": false,
-  "icons": [],
+ // "icons": [],
+
+  "icons": [
+    {
+      "src": "logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+
+
+
   "url": "https://kfishermail.github.io",
   "screenshots": []
 }
