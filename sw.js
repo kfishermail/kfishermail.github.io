@@ -87,7 +87,7 @@ const fromCache = request =>
 //        .then(cache =>
 //            fetch(request).then(response => cache.put(request, response))
 //        );
-const update = request => {};
+const update = request => { };
 // general strategy when making a request (eg if online try to fetch it
 // from the network with a timeout, if something fails serve from cache)
 self.addEventListener('fetch', evt => {
