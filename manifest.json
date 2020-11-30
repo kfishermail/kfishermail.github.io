@@ -1,29 +1,28 @@
-{
-  "dir": "ltr",
-  "lang": "en",
-  "name": "Stock Viewer",
-  "short_name": "Stock Viewer",
-  "scope": "/",
-  "display": "standalone",
-  "start_url": "https://kfishermail.github.io/",
-  "background_color": "#000000",
-  "theme_color": "transparent",
-  "description": "",
-  "orientation": "any",
-  "related_applications": [],
-  "prefer_related_applications": false,
- // "icons": [],
-
-  "icons": [
-    {
-      "src": "logo.png",
-      "sizes": "512x512",
-      "type": "image/png"
-    }
-  ],
-
-
-
-  "url": "https://kfishermail.github.io",
-  "screenshots": []
-}
+////{
+////  "dir": "ltr",
+////  "lang": "en",
+////  "name": "Stock Viewer",
+////  "short_name": "Stock Viewer",
+////  "scope": "/",
+////  // standalone
+////  // fullscreen
+////  // minimal-ui
+////  // browser
+////  "display": "standalone",
+////  "start_url": "https://kfishermail.github.io/",
+////  "background_color": "#000000",
+////  "theme_color": "transparent",
+////  "description": "",
+////  "orientation": "any",
+////  "related_applications": [],
+////  "prefer_related_applications": false,
+////  "icons": [
+////    {
+////      "src": "logo.png",
+////      "sizes": "512x512",
+////      "type": "image/png"
+////    }
+////  ],
+////  "url": "https://kfishermail.github.io",
+////  "screenshots": []
+////}

@@ -140,10 +140,6 @@
     <link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
 
     <link rel="manifest" href="/manifest.json" />
-
-
-
-
     <script>
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('sw.js');
@@ -194,7 +190,7 @@
         switch (location.hostname) {
             case "localhost":
             case "mrouter":
-            case "dlaptop":
+                //case "dlaptop":
                 MQTThost = "mqttbroker";
                 useSSL = false;
                 port = 8000;
@@ -944,11 +940,11 @@
         }, false);
 
         window.addEventListener('click', function () {
-            SafeAddToListbox("mouse click");
+            //SafeAddToListbox("mouse click");
         }, false);
 
         document.addEventListener('mousedown', function () {
-            SafeAddToListbox("mouse down");
+            //SafeAddToListbox("mouse down");
         }, false);
 
 
@@ -1356,10 +1352,10 @@
         //This allows you to test your website as if user were strongly
         //engaged with your site and playback autoplay would be always allowed.
         function playSound(buffer) {
-            SafeAddToListbox("playSound Before try");
+            //SafeAddToListbox("playSound Before try");
             if (context != null) {
                 try {
-                    SafeAddToListbox("playSound(buffer) -- kpf");
+                    //SafeAddToListbox("playSound(buffer) -- kpf");
                     context.resume();
                     var myContext = new AudioContext();
 
@@ -1379,11 +1375,11 @@
                         //source.connect(context.destination);       // connect the source to the context's destination (the speakers)
                         source.start(0);                           // play the source now
                     }
-                    SafeAddToListbox("setTimeout -- kpf");
+                    //SafeAddToListbox("setTimeout -- kpf");
 
                     setTimeout(function () {
                         var st = context.state;
-                        SafeAddToListbox("Audio State: " + st);
+                        //SafeAddToListbox("Audio State: " + st);
                         if (st != "running") {
                             displayToast("Audio Disabled, Click Anywhere To Enable");
                         }
@@ -1466,7 +1462,7 @@
             NewGetMQTTFile(url, function (png) {
                 SafeAddToListbox("1. In Callback Kenny Fisher: " + png.length);
                 if (png.length == 0) {
-                    SafeAddToListbox("************************** Len: 0 **************************");
+                    //SafeAddToListbox("************************** Len: 0 **************************");
                 }
                 callback(png);
             });
@@ -1537,7 +1533,7 @@
 
         function parseMQTT(r_message) {
             //return;
-            SafeAddToListbox("In parseMQTT ******************************");
+            //SafeAddToListbox("In parseMQTT ******************************");
 
 
             //var AUTOPLAY = false;
@@ -1548,9 +1544,9 @@
             //SafeAddToListbox("Autoplay: " + AUTOPLAY);
 
 
-            if (r_message.destinationName.includes("ping") == false) {
-                SafeAddToListbox("In parseMQTT: " + r_message.destinationName);
-            }
+            //if (r_message.destinationName.includes("ping") == false) {
+            //    SafeAddToListbox("In parseMQTT: " + r_message.destinationName);
+            //}
             //return;
             var topicParts = r_message.destinationName.split("/");
             var Command = topicParts[topicParts.length - 1];//.ToLower();
@@ -1572,7 +1568,7 @@
 
             else if (Command == "newaudio") {
                 //return;
-                SafeAddToListbox("Got NewAudio");
+                //SafeAddToListbox("Got NewAudio");
                 //return;
                 var response = JSON.parse(r_message.payloadString);
 
@@ -1597,13 +1593,13 @@
                     }
                 }
                 else if (response.say != null) {
-                    SafeAddToListbox("Got say");
+                    //SafeAddToListbox("Got say");
 
                     var st = context.state;
-                    SafeAddToListbox("Got TTS: Audio State: " + st);
+                    //SafeAddToListbox("Got TTS: Audio State: " + st);
                     if (st != "running") {
 
-                        SafeAddToListbox("Audio softClick64: " + softClick64.length);
+                        //SafeAddToListbox("Audio softClick64: " + softClick64.length);
 
                         var ABuffer = _base64ToArrayBuffer(softClick64);
                         playMp3Buffer(ABuffer);
@@ -1942,17 +1938,308 @@
         }
 
 
-        //**************************************************************************************
+        //*************************************************************************************
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        function log(s) {
+            SafeAddToListbox(s);
+        }
+
+        function watchBluetoothScan() {
+            var bluetooth = navigator.bluetooth;//navigator.bluetooth
+
+            SafeAddToListbox("bluetooth", "Testing Bluetooth");
+            if (!bluetooth) {
+                SafeAddToListbox("bluetooth", "Bluetooth Not Available");
+            } else {
+
+                log('Requesting any Bluetooth device...');
+                navigator.bluetooth.requestDevice({
+                    // filters: [...] <- Prefer filters to save energy & show relevant devices.
+                    acceptAllDevices: true
+                })
+                    .then(device => {
+                        log('> Requested ' + device.name);
+
+                        device.addEventListener('advertisementreceived', (event) => {
+                            log('Advertisement received.');
+                            log('  Device Name: ' + event.device.name);
+                            log('  Device ID: ' + event.device.id);
+                            log('  RSSI: ' + event.rssi);
+                            log('  TX Power: ' + event.txPower);
+                            log('  UUIDs: ' + event.uuids);
+                            event.manufacturerData.forEach((valueDataView, key) => {
+                                logDataView('Manufacturer', key, valueDataView);
+                            });
+                            event.serviceData.forEach((valueDataView, key) => {
+                                logDataView('Service', key, valueDataView);
+                            });
+                        });
+
+                        log('Watching advertisements from "' + device.name + '"...');
+                        return device.watchAdvertisements();
+                    })
+                    .catch(error => {
+                        log('Argh! ' + error);
+                    });
+            }
+        }
+
+
+        function LEScan(major, minor, pathLossVs1m) {
+            SafeAddToListbox("In LEScan");
+            if (!navigator) return;
+            SafeAddToListbox("Test 1");
+            if (!navigator.bluetooth) return;
+            SafeAddToListbox("Test 2");
+            if (!navigator.bluetooth.requestLEScan) return;
+            SafeAddToListbox("Test 3");
+            SafeAddToListbox("Calling LEScan request");
+            navigator.bluetooth.requestLEScan({
+                //filters: [{
+                //    //manufacturerData: {
+                //    //    0x004C: {
+                //    //        dataPrefix: new Uint8Array([
+                //    //            0x02, 0x15, // iBeacon identifier.
+                //    //            0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15  // My beacon UUID.
+                //    //        ])
+                //    //    }
+                //    //}
+                //}],
+                acceptAllAdvertisements: true,
+                keepRepeatedDevices: true
+            }).then(() => {
+                navigator.bluetooth.addEventListener('advertisementreceived', event => {
+                    log("Got advertisement");
+                    ////let appleData = event.manufacturerData.get(0x004C);
+                    ////if (appleData.byteLength != 23) {
+                    ////    // Isn’t an iBeacon.
+                    ////    return;
+                    ////}
+                    let major = appleData.getUint16(18, false);
+                    let minor = appleData.getUint16(20, false);
+                    let txPowerAt1m = -appleData.getInt8(22);
+                    let pathLossVs1m = txPowerAt1m - event.rssi;
+
+                    recordNearbyBeacon(major, minor, pathLossVs1m);
+                })
+                //    .catch(error) {
+                //    log("error: " + error);
+                //};
+            })
+        }
+
+
+        var myDescriptor;
+        var myCharacteristic;
+
+        async function watchBluetoothAsync() {
+            var bluetooth = navigator.bluetooth;//navigator.bluetooth
+
+            SafeAddToListbox("bluetooth", "Testing Bluetooth");
+            if (!bluetooth) {
+                SafeAddToListbox("bluetooth", "Bluetooth Not Available");
+            } else {
+                if (!myCharacteristic) {
+                    log('Requesting any Bluetooth device...');
+                    try {
+                        const device = await navigator.bluetooth.requestDevice(
+                            { filters: [{ services: [0xff02] }] }
+                        );
+
+
+
+
+
+                        ////...] //<- Prefer filters to save energy & show relevant devices.
+                        //acceptAllDevices: true
+
+
+                        const server = await device.gatt.connect();
+                        const service = await server.getPrimaryService(0xff02);
+                        const characteristic = await service.getCharacteristic(0xfffb);
+                        myCharacteristic = characteristic;
+                        log("Now Call proc");
+                        setCharacteristic();
+                    }
+                    catch (error) {
+                        log('Argh: ' + error);
+                    }
+                } else {
+                    setCharacteristic();
+                }
+            }
+        }
+
+        function watchBluetooth() {
+            SafeAddToListbox("Call lescan");
+            LEScan();
+            return;
+            var bluetooth = navigator.bluetooth;//navigator.bluetooth
+
+            SafeAddToListbox("bluetooth", "Testing Bluetooth");
+            if (!bluetooth) {
+                SafeAddToListbox("bluetooth", "Bluetooth Not Available");
+            } else {
+                if (!myCharacteristic) {
+                    log('Requesting any Bluetooth device...');
+                    navigator.bluetooth.requestDevice({
+                        filters: [
+                            { services: [0xff02] }
+                        ]
+
+
+                        ////...] //<- Prefer filters to save energy & show relevant devices.
+                        //acceptAllDevices: true
+                    })
+                        .then(device => {
+                            log('> Requested ' + device.name);
+                            return device.gatt.connect();
+                        })
+                        .then(server => {
+                            log("Getting Service");
+                            return server.getPrimaryService(0xff02);
+                        })
+                        .then(service => {
+                            log("Getting Characteristic");
+                            return service.getCharacteristic(0xfffb);
+                        })
+                        .then(characteristic => {
+                            log('Got Characteristic');
+                            myCharacteristic = characteristic;
+                            log("Now Call proc");
+                            setCharacteristic();
+                        })
+                        .catch(error => {
+                            //document.querySelector('#writeButton').disabled = true;
+                            log('Argh! ' + error);
+                        });
+                } else {
+                    setCharacteristic();
+                }
+            }
+        }
+
+        function setCharacteristic() {
+            log("In onWriteButton");
+            if (!myCharacteristic) {
+                log("myCharacteristic is null");
+                return;
+            }
+            log("Continue");
+            //let encoder = new TextEncoder('utf-8');
+            //let value = document.querySelector('#description').value;
+            let value = hexStringToByte("00ff800004000100");
+            log('Setting Characteristic User Description...');
+            //myDescriptor.writeValue(encoder.encode(value))
+            myCharacteristic.writeValue(value)
+                .then(_ => {
+                    log('> Characteristic User Description changed');
+                })
+                .catch(error => {
+                    log('Argh! ' + error);
+                });
+        }
+
+        function byteToHexString(uint8arr) {
+            if (!uint8arr) {
+                return '';
+            }
+            var hexStr = '';
+            for (var i = 0; i < uint8arr.length; i++) {
+                var hex = (uint8arr[i] & 0xff).toString(16);
+                hex = (hex.length === 1) ? '0' + hex : hex;
+                hexStr += hex;
+            }
+
+            return hexStr.toUpperCase();
+        }
+        //.then(characteristic => {
+        //    log("Getting Descriptor");
+        //    return (characteristic.getDescriptor('gatt.characteristic_user_description');
+        //})
+        //.then(descriptor => {
+        //    myDescriptor = descriptor;
+        //    log('Reading Descriptor...');
+        //    return descriptor.readValue();
+        //})
+        //.then(value => {
+        //    let decoder = new TextDecoder('utf-8');
+        //    log('> Characteristic User Description: ' + decoder.decode(value));
+        //})
+        function hexStringToByte(str) {
+            if (!str) {
+                return new Uint8Array();
+            }
+
+            var a = [];
+            for (var i = 0, len = str.length; i < len; i += 2) {
+                a.push(parseInt(str.substr(i, 2), 16));
+            }
+
+            return new Uint8Array(a);
+        }
+
+        // Utils
+        //device.addEventListener('advertisementreceived', (event) => {
+        //    log('Advertisement received.');
+        //    log('  Device Name: ' + event.device.name);
+        //    log('  Device ID: ' + event.device.id);
+        //    log('  RSSI: ' + event.rssi);
+        //    log('  TX Power: ' + event.txPower);
+        //    log('  UUIDs: ' + event.uuids);
+        //    event.manufacturerData.forEach((valueDataView, key) => {
+        //        logDataView('Manufacturer', key, valueDataView);
+        //    });
+        //    event.serviceData.forEach((valueDataView, key) => {
+        //        logDataView('Service', key, valueDataView);
+        //    });
+        //});
+
+        ////log('Watching advertisements from "' + device.name + '"...');
+        ////return device.watchAdvertisements();
+        const logDataView = (labelOfDataSource, key, valueDataView) => {
+            const hexString = [...new Uint8Array(valueDataView.buffer)].map(b => {
+                return b.toString(16).padStart(2, '0');
+            }).join(' ');
+            const textDecoder = new TextDecoder('ascii');
+            const asciiString = textDecoder.decode(valueDataView.buffer);
+            log(`  ${labelOfDataSource} Data: ` + key +
+                '\n    (Hex) ' + hexString +
+                '\n    (ASCII) ' + asciiString);
+        };
+
+
+
+
+
         function ScanBluetooth() {
             if (navigator) {
-                SafeAddToListbox("bluetooth", "navigator not null");
+                SafeAddToListbox("bluetooth", "123. navigator not null");
             } else {
-                SafeAddToListbox("bluetooth", "navigator is null");
+                SafeAddToListbox("bluetooth", "123. navigator is null");
             }
             if (navigator.bluetooth) {
-                SafeAddToListbox("bluetooth", "navigator.bluetooth not null");
+                SafeAddToListbox("bluetooth", "123. navigator.bluetooth not null");
             } else {
-                SafeAddToListbox("bluetooth", "navigator.bluetooth is null");
+                SafeAddToListbox("bluetooth", "123. navigator.bluetooth is null");
             }
             var bluetooth = navigator.bluetooth;//navigator.bluetooth
 
@@ -1974,8 +2261,20 @@
                             acceptAllDevices: true
                         }).then(function (device) {
                             SafeAddToListbox("bluetooth", `new Found device: ${device.name}`);
+
+                            //{
+                            //    bubbles: true,
+                            //    device: deviceObj,
+                            //    uuids: [],
+                            //    manufacturerData: new Map(),
+                            //    serviceData: new Map()
+                            // rssi???
+                            //}
+
+                            //https://webbluetoothcg.github.io/web-bluetooth/
+
                             device.addEventListener('onadvertisementreceived', event => {
-                                SafeAddToListbox("bluetooth", "EV");
+                                SafeAddToListbox("bluetooth", "EVent: " + event.name);
                             });
 
                         }).catch(function (mess) {
@@ -2004,7 +2303,8 @@
         function playCorona() {
             //playSoftClick();
             //playURL("d:\\corona.mp3");
-            ScanBluetooth();
+            //ScanBluetooth();
+            watchBluetooth();
         }
         function volumeDown() {
             playSoftClick();
@@ -2098,6 +2398,7 @@
             ////SafeAddToListbox(result);
             //document.cookie = "username=John Doe; expires=Thu, 18 Dec 2023 12:00:00 UTC";
         }
+
         function toggleImages() {
             //    top: 10 %;
             //    left: 10 %;
@@ -2240,6 +2541,18 @@
             ftpConnection.Connect("test.mosquitto.org", 8081, true, true, ["ftpresponse/" + MachineID + "/#"], mqttFtpMessageArrived);
         }
 
+        function Exit() {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            } else if (document.mozCancelFullScreen) {
+                document.mozCancelFullScreen();
+            } else if (document.msExitFullscreen) {
+                document.msExitFullscreen();
+            }
+        }
+
     </script>
 </head>
 
@@ -2248,7 +2561,7 @@
 
 
 <body id="mainBody">
-    Kenny Fisher this is the latest -- 1166 - thur
+    Kenny Fisher this is the latest -- 1166789 - thur
     <!--<div id="buttons">
         <h1>-->
     <!--Stock Market MQTT Monitor-->
@@ -2308,6 +2621,7 @@
 
         <button type="button" onclick="connectORG()">Connect ORG</button>
         <button type="button" onclick="connectORGTLS()">Connect ORGTLS</button>
+        <button type="button" onclick="Exit()">Exit</button>
 
 
 
@@ -2382,83 +2696,81 @@
 
 
 
-                                                //Open it when #opener is clicked
-                                                //$("#opener").click(function () {
-                                                //    $("#dialog").dialog("open");
-                                                //});
+                                                                                                                                                            //Open it when #opener is clicked
+                                                                                                                                                            //$("#opener").click(function () {
+                                                                                                                                                            //    $("#dialog").dialog("open");
+                                                                                                                                                            //});
 
-                                                //When the button in the form is clicked, take the input value and set that as the value of `.myTarget`
-                                                ////$('.formSaver').on('click', function () {
-                                                ////    $('.myTarget').text($('.myInput').val());
-                                                ////    $("#dialog").dialog('close');
-                                                ////});
-
-
+                                                                                                                                                            //When the button in the form is clicked, take the input value and set that as the value of `.myTarget`
+                                                                                                                                                            ////$('.formSaver').on('click', function () {
+                                                                                                                                                            ////    $('.myTarget').text($('.myInput').val());
+                                                                                                                                                            ////    $("#dialog").dialog('close');
+                                                                                                                                                            ////});
 
 
-                                                //////document.addEventListener("keydown", event => {
-                                                //////    SafeAddToListbox("KEY: " + event.key);
-                                                //////    switch (event.key) {
-                                                //////        case 'F8':
-                                                //////            kennyFisher("mqtt://scrn1.png", function (png) { //startSlideShow
-                                                //////                if (png.length > 0) {
-                                                //////                    var t = "data:image/png;base64," + arrayBufferToBase64(png)
-                                                //////                    document.getElementById("ItemPreview").src = t;
-                                                //////                    fadeNextImage(t);
-                                                //////                }
-                                                //////            });
-                                                //////            break;
-                                                //////        case 'F9':
-                                                //////            kennyFisher("mqtt://scrn2.png", function (png) { //startSlideShow
-                                                //////                if (png.length > 0) {
-                                                //////                    var t = "data:image/png;base64," + arrayBufferToBase64(png)
-                                                //////                    document.getElementById("ItemPreview").src = t;
-                                                //////                    fadeNextImage(t);
-                                                //////                }
-                                                //////            });
-                                                //////            break;
-                                                //////        case 'F10':
-                                                //////            kennyFisher("mqtt://scrn3.png", function (png) { //startSlideShow
-                                                //////                if (png.length > 0) {
-                                                //////                    var t = "data:image/png;base64," + arrayBufferToBase64(png)
-                                                //////                    document.getElementById("ItemPreview").src = t;
-                                                //////                    fadeNextImage(t);
-                                                //////                }
-                                                //////            });
-                                                //////            break;
-                                                //////    }
-                                                //////    //alert(event.keyCode)
-                                                //////    //	if (event.isComposing || event.keyCode === 115) {
-                                                //////    //		return;
-                                                //////    //	}
-                                                //////    // do something
-                                                //////});
-
-                                                //////var message = new Paho.MQTT.Message(fName);
-                                                //////message.destinationName = dest;
-                                                //////message.qos = 1;
-                                                //////message.retained = false;
-                                                //////try {
-                                                //////    mqttFTP.send(message);
-                                                //////}
-                                                //////catch (err) {
-                                                //////    SafeAddToListbox("mqttFTP Send Error: " + err);
-                                                //////}
-                                                //var tt = new setup();
 
 
-                                                //===   del -----------------------------------------------------------------------------------
-                                                ////function tester(m) {
-                                                ////    SafeAddToListbox("Got Message ===========================================");
-                                                ////    parseMQTT(m);
-                                                ////}
+                                                                                                                                                            //////document.addEventListener("keydown", event => {
+                                                                                                                                                            //////    SafeAddToListbox("KEY: " + event.key);
+                                                                                                                                                            //////    switch (event.key) {
+                                                                                                                                                            //////        case 'F8':
+                                                                                                                                                            //////            kennyFisher("mqtt://scrn1.png", function (png) { //startSlideShow
+                                                                                                                                                            //////                if (png.length > 0) {
+                                                                                                                                                            //////                    var t = "data:image/png;base64," + arrayBufferToBase64(png)
+                                                                                                                                                            //////                    document.getElementById("ItemPreview").src = t;
+                                                                                                                                                            //////                    fadeNextImage(t);
+                                                                                                                                                            //////                }
+                                                                                                                                                            //////            });
+                                                                                                                                                            //////            break;
+                                                                                                                                                            //////        case 'F9':
+                                                                                                                                                            //////            kennyFisher("mqtt://scrn2.png", function (png) { //startSlideShow
+                                                                                                                                                            //////                if (png.length > 0) {
+                                                                                                                                                            //////                    var t = "data:image/png;base64," + arrayBufferToBase64(png)
+                                                                                                                                                            //////                    document.getElementById("ItemPreview").src = t;
+                                                                                                                                                            //////                    fadeNextImage(t);
+                                                                                                                                                            //////                }
+                                                                                                                                                            //////            });
+                                                                                                                                                            //////            break;
+                                                                                                                                                            //////        case 'F10':
+                                                                                                                                                            //////            kennyFisher("mqtt://scrn3.png", function (png) { //startSlideShow
+                                                                                                                                                            //////                if (png.length > 0) {
+                                                                                                                                                            //////                    var t = "data:image/png;base64," + arrayBufferToBase64(png)
+                                                                                                                                                            //////                    document.getElementById("ItemPreview").src = t;
+                                                                                                                                                            //////                    fadeNextImage(t);
+                                                                                                                                                            //////                }
+                                                                                                                                                            //////            });
+                                                                                                                                                            //////            break;
+                                                                                                                                                            //////    }
+                                                                                                                                                            //////    //alert(event.keyCode)
+                                                                                                                                                            //////    //	if (event.isComposing || event.keyCode === 115) {
+                                                                                                                                                            //////    //		return;
+                                                                                                                                                            //////    //	}
+                                                                                                                                                            //////    // do something
+                                                                                                                                                            //////});
 
-                                                //function connectToMQTT() {
-                                                //    ////MQTTconnect();
-                                                //    //ConnectmqttFtp();
-                                                //}
+                                                                                                                                                            //////var message = new Paho.MQTT.Message(fName);
+                                                                                                                                                            //////message.destinationName = dest;
+                                                                                                                                                            //////message.qos = 1;
+                                                                                                                                                            //////message.retained = false;
+                                                                                                                                                            //////try {
+                                                                                                                                                            //////    mqttFTP.send(message);
+                                                                                                                                                            //////}
+                                                                                                                                                            //////catch (err) {
+                                                                                                                                                            //////    SafeAddToListbox("mqttFTP Send Error: " + err);
+                                                                                                                                                            //////}
+                                                                                                                                                            //var tt = new setup();
 
 
+                                                                                                                                                            //===   del -----------------------------------------------------------------------------------
+                                                                                                                                                            ////function tester(m) {
+                                                                                                                                                            ////    SafeAddToListbox("Got Message ===========================================");
+                                                                                                                                                            ////    parseMQTT(m);
+                                                                                                                                                            ////}
+
+                                                                                                                                                            //function connectToMQTT() {
+                                                                                                                                                            //    ////MQTTconnect();
+                                                                                                                                                            //    //ConnectmqttFtp();
+                                                                                                                                                            //}
 
 
 
@@ -2466,268 +2778,270 @@
 
 
 
-                                                //SafeAddToListbox("YES, Got ftpresponse message");
-                                                ////var sourceTopics = dest.split("/");
-
-                                                ////if (subTopics[2] == sourceTopics[2]) {
-                                                ////    var bytes = r_message.payloadBytes
-                                                ////    SafeAddToListbox("Got Match !!!!!!!!!!!!!!!!!!!");
-                                                ////    SafeAddToListbox("Calling Callback, Len: " + bytes.length);
-                                                ////    if (bytes.length == 0) {
-                                                ////        SafeAddToListbox("---------------   FTP Response  Length == 0 -------------")
-                                                ////    }
-                                                ////    callback(bytes)
-                                                ////}
-                                                ////else {
-                                                ////    SafeAddToListbox("No Match - MS: " + subTopics[2] + " ME: " + sourceTopics[2]);
-                                                ////}
-                                                //if (mqttFTP == null) {
-                                                //    SafeAddToListbox("mqttFTP = null");
-                                                //    return;
-                                                //}
 
 
-                                                ////var dest = "";
-                                                ////mqttFTP.onMessageArrived = function (r_message) {
-                                                ////    SafeAddToListbox("Got Message");
-                                                ////    var subTopics = r_message.destinationName.split("/");
-                                                ////    switch (subTopics[0]) {
-                                                ////        case "ftpresponse":
-                                                ////            //SafeAddToListbox("YES, Got ftpresponse message");
-                                                ////            var sourceTopics = dest.split("/");
+                                                                                                                                                            //SafeAddToListbox("YES, Got ftpresponse message");
+                                                                                                                                                            ////var sourceTopics = dest.split("/");
 
-                                                ////            if (subTopics[2] == sourceTopics[2]) {
-                                                ////                var bytes = r_message.payloadBytes
-                                                ////                SafeAddToListbox("Got Match !!!!!!!!!!!!!!!!!!!");
-                                                ////                SafeAddToListbox("Calling Callback, Len: " + bytes.length);
-                                                ////                if (bytes.length == 0) {
-                                                ////                    SafeAddToListbox("---------------   FTP Response  Length == 0 -------------")
-                                                ////                }
-                                                ////                callback(bytes)
-                                                ////            }
-                                                ////            else {
-                                                ////                SafeAddToListbox("No Match - MS: " + subTopics[2] + " ME: " + sourceTopics[2]);
-                                                ////            }
-                                                ////            break;
-                                                ////    }
-                                                ////};
+                                                                                                                                                            ////if (subTopics[2] == sourceTopics[2]) {
+                                                                                                                                                            ////    var bytes = r_message.payloadBytes
+                                                                                                                                                            ////    SafeAddToListbox("Got Match !!!!!!!!!!!!!!!!!!!");
+                                                                                                                                                            ////    SafeAddToListbox("Calling Callback, Len: " + bytes.length);
+                                                                                                                                                            ////    if (bytes.length == 0) {
+                                                                                                                                                            ////        SafeAddToListbox("---------------   FTP Response  Length == 0 -------------")
+                                                                                                                                                            ////    }
+                                                                                                                                                            ////    callback(bytes)
+                                                                                                                                                            ////}
+                                                                                                                                                            ////else {
+                                                                                                                                                            ////    SafeAddToListbox("No Match - MS: " + subTopics[2] + " ME: " + sourceTopics[2]);
+                                                                                                                                                            ////}
+                                                                                                                                                            //if (mqttFTP == null) {
+                                                                                                                                                            //    SafeAddToListbox("mqttFTP = null");
+                                                                                                                                                            //    return;
+                                                                                                                                                            //}
 
 
+                                                                                                                                                            ////var dest = "";
+                                                                                                                                                            ////mqttFTP.onMessageArrived = function (r_message) {
+                                                                                                                                                            ////    SafeAddToListbox("Got Message");
+                                                                                                                                                            ////    var subTopics = r_message.destinationName.split("/");
+                                                                                                                                                            ////    switch (subTopics[0]) {
+                                                                                                                                                            ////        case "ftpresponse":
+                                                                                                                                                            ////            //SafeAddToListbox("YES, Got ftpresponse message");
+                                                                                                                                                            ////            var sourceTopics = dest.split("/");
 
-
-                                                //////function onConnectionLost(reason) {
-                                                //////    SafeAddToListbox("Connection Lost: " + reason.errorMessage);
-                                                //////    //document.getElementById("status_messages").innerHTML = "Connection Lost" + reason.errorMessage;
-                                                //////    ////////setTimeout(MQTTconnect, reconnectTimeout);
-                                                //////}
-                                                //////function onFailure(message) {
-                                                //////    SafeAddToListbox("Connection Failure");
-                                                //////    //document.getElementById("status_messages").innerHTML = "Connection Failed- Retrying";
-                                                //////    setTimeout(MQTTconnect, reconnectTimeout);
-                                                //////}
-                                                //////function onConnect() {
-                                                //////    // Once a connection has been made, make a subscription and send a message.
-                                                //////    //document.getElementById("status_messages").innerHTML = "Connected to " + host + " on port " + port;
-                                                //////    //console.log("on Connect ");
-                                                //////    SafeAddToListbox("1. System Is Now Connected!!!!!!!!!!!!!!!!!!");
-                                                //////    //kpfSubscribe()
-                                                //////    //function kpfSubscribe() {
-                                                //////    var soptions = {
-                                                //////        qos: 1,
-                                                //////    };
-                                                //////    //mqtt.subscribe("kenny_fisher/#", soptions);
-                                                //////    mqtt.subscribe("kenny_fisher/+/*/#", soptions);
-                                                //////    mqtt.subscribe("kenny_fisher/+/" + UniqueID + "/#", soptions);
-                                                //////}
-
-
-                                                ////function onConnected(recon, url) {
-                                                ////    SafeAddToListbox("2. System Is Now Connected!!!!!!!!!!!!!!!!!!");
-                                                ////}
-                                                //////function disconnect() {
-                                                //////    if (connected_flag == 1)
-                                                //////        mqtt.disconnect();
-                                                //////}
-
-                                                //////function onMessageArrived(r_message) {
-                                                //////    //parseMQTT(r_message);
-                                                //////}
-
-
-
-                                                //////function kpfConnect(host, port, clean_sessions) {
-                                                //////    var clientID = "web" + new Date().getTime();
-                                                //////    mqtt = new Paho.MQTT.Client(host, port, clientID);
-                                                //////    var options = {
-                                                //////        timeout: 3,
-                                                //////        cleanSession: clean_sessions,
-                                                //////        onSuccess: onConnect,
-                                                //////        onFailure: onFailure,
-                                                //////    };
-                                                //////    SafeAddToListbox("Got New Client");
-                                                //////    mqtt.onConnectionLost = onConnectionLost;
-                                                //////    mqtt.onMessageArrived = onMessageArrived;
-                                                //////    //mqtt.onConnected = onConnected;
-                                                //////    ////////////////mqtt.isConnected = onConnected;
-                                                //////    SafeAddToListbox("Starting mqtt Connect");
-                                                //////    try {
-                                                //////        mqtt.connect(options);
-                                                //////    }
-                                                //////    catch (err) {
-                                                //////        SafeAddToListbox("Connect Error: " + err);
-                                                //////    }
-                                                //////    return false;
-                                                //////}
-
-
-
-                                                //////function KPFSendMessage(topic, msg) {
-                                                //////    if (mqtt && mqtt.isConnected() == true) {
-                                                //////        //return;
-                                                //////        message = new Paho.MQTT.Message(msg);
-                                                //////        message.destinationName = topic;
-                                                //////        message.qos = 1;
-                                                //////        message.retained = false;
-                                                //////        try {
-                                                //////            mqtt.send(message);
-                                                //////        }
-                                                //////        catch (err) {
-                                                //////            SafeAddToListbox("mqtt Send Error: " + err);
-                                                //////        }
-                                                //////    }
-                                                //////    else {
-                                                //////        SafeAddToListbox("101. mqttFTP not connected");
-                                                //////    }
-                                                //////}
-
-
-
-                                                //////function ConnectmqttFtp() {
-                                                //////    SafeAddToListbox("mqttFTP Starting Connect");
-                                                //////    var clientID = "web" + new Date().getTime();
-                                                //////    mqttFTP = new Paho.MQTT.Client(MQTThost, port, clientID);
-
-
-                                                //////    // ------------------------
-                                                //////    var dest = "";
-                                                //////    mqttFTP.onMessageArrived = function (r_message) {
-                                                //////        SafeAddToListbox("Got ftpresponse Message");
-                                                //////        var subTopics = r_message.destinationName.split("/");
-                                                //////        if (callbackArray.length > 0) {
-                                                //////            for (i = 0; i < callbackArray.length; i++) {
-                                                //////                if (callbackArray[i].response == r_message.destinationName) {
-                                                //////                    SafeAddToListbox("Got Match");
-                                                //////                    var tElement = callbackArray[i];
-                                                //////                    callbackArray.splice(i, 1);
-                                                //////                    var bytes = r_message.payloadBytes
-                                                //////                    tElement.callback(bytes);
-                                                //////                }
-                                                //////            }
-                                                //////        }
-                                                //////    }
-                                                //////    var connectOptions = {
-                                                //////        timeout: 3,
-                                                //////        cleanSession: true,
-                                                //////        onSuccess: function (m) {
-                                                //////            SafeAddToListbox("mqttFTP - In Connect onSuccess: " + mqttFTP.isConnected());
-                                                //////            var suboptions = {
-                                                //////                qos: 1,
-                                                //////                onSuccess: function () {
-                                                //////                    kennyFisher("mqtt://scrn2.png", function (png) {
-                                                //////                        if (png.length > 0) {
-                                                //////                            var t = "data:image/png;base64," + arrayBufferToBase64(png)
-                                                //////                            fadeNextImage(t);
-                                                //////                        }
-                                                //////                    });
-                                                //////                    SafeAddToListbox("mqttFTP - In Subscribe onSuccess 3 mqttFTP");
-                                                //////                }
-                                                //////            };
-                                                //////            //SafeAddToListbox("Subscribe To ftpresponse");
-                                                //////            mqttFTP.subscribe("ftpresponse/" + MachineID + "/#", suboptions);
-                                                //////        },
-                                                //////        onFailure: function (m) {
-                                                //////            //SafeAddToListbox("onFailure Error");
-                                                //////            //console.log("KPF Failure In FTP Connect")
-                                                //////        },
-                                                //////    };
-                                                //////    try {
-                                                //////        SafeAddToListbox("Starting Connect Process");
-                                                //////        mqttFTP.onFailure = function () {
-                                                //////            SafeAddToListbox("mqttFTP Connect Failure");
-                                                //////        };
-                                                //////        mqttFTP.onConnectionLost = function (eObj) {
-                                                //////            SafeAddToListbox("Lost Connection: " + eObj.errorMessage)
-                                                //////        };
-                                                //////        mqttFTP.connect(connectOptions);
-                                                //////    }
-                                                //////    catch (err) {
-                                                //////        SafeAddToListbox("Connection ERROR: " + err.message);
-                                                //////    }
-                                                //////}
-
-
-
-                                                ////function GetMQTTFile(fName, callback) {
-                                                ////    ////if (ftpConnection && ftpConnection.isConnected() == true) {
-
-                                                ////    ////    if (fName.startsWith("mqtt://")) {
-                                                ////    ////        fName = fName.substring(7);
-                                                ////    ////    }
-
-                                                ////    ////    ftpCounter++;
-                                                ////    ////    SafeAddToListbox("Get File: " + fName);
-                                                ////    ////    dest = "ftprequest/" + MachineID + "/" + ftpCounter + "/" + fName;
-
-
-
-                                                ////    ////    var tEntry = {}
-                                                ////    ////    tEntry.response = "ftpresponse/" + MachineID + "/" + ftpCounter + "/" + fName;
-                                                ////    ////    tEntry.callback = callback;
-                                                ////    ////    callbackArray.push(tEntry);
-
-
-                                                ////    ////    SafeAddToListbox("Sent: " + dest);
-                                                ////    ////    message.destinationName = dest;
-                                                ////    ////    message.qos = 1;
-                                                ////    ////    message.retained = false;
-                                                ////    ////    try {
-                                                ////    ////        mqttFTP.send(message);
-                                                ////    ////    }
-                                                ////    ////    catch (err) {
-                                                ////    ////        SafeAddToListbox("mqttFTP Send Error: " + err);
-                                                ////    ////    }
-                                                ////    ////}
-                                                ////    ////else {
-                                                ////    ////    SafeAddToListbox("1. mqttFTP not connected");
-                                                ////    ////}
-                                                ////}
+                                                                                                                                                            ////            if (subTopics[2] == sourceTopics[2]) {
+                                                                                                                                                            ////                var bytes = r_message.payloadBytes
+                                                                                                                                                            ////                SafeAddToListbox("Got Match !!!!!!!!!!!!!!!!!!!");
+                                                                                                                                                            ////                SafeAddToListbox("Calling Callback, Len: " + bytes.length);
+                                                                                                                                                            ////                if (bytes.length == 0) {
+                                                                                                                                                            ////                    SafeAddToListbox("---------------   FTP Response  Length == 0 -------------")
+                                                                                                                                                            ////                }
+                                                                                                                                                            ////                callback(bytes)
+                                                                                                                                                            ////            }
+                                                                                                                                                            ////            else {
+                                                                                                                                                            ////                SafeAddToListbox("No Match - MS: " + subTopics[2] + " ME: " + sourceTopics[2]);
+                                                                                                                                                            ////            }
+                                                                                                                                                            ////            break;
+                                                                                                                                                            ////    }
+                                                                                                                                                            ////};
 
 
 
 
+                                                                                                                                                            //////function onConnectionLost(reason) {
+                                                                                                                                                            //////    SafeAddToListbox("Connection Lost: " + reason.errorMessage);
+                                                                                                                                                            //////    //document.getElementById("status_messages").innerHTML = "Connection Lost" + reason.errorMessage;
+                                                                                                                                                            //////    ////////setTimeout(MQTTconnect, reconnectTimeout);
+                                                                                                                                                            //////}
+                                                                                                                                                            //////function onFailure(message) {
+                                                                                                                                                            //////    SafeAddToListbox("Connection Failure");
+                                                                                                                                                            //////    //document.getElementById("status_messages").innerHTML = "Connection Failed- Retrying";
+                                                                                                                                                            //////    setTimeout(MQTTconnect, reconnectTimeout);
+                                                                                                                                                            //////}
+                                                                                                                                                            //////function onConnect() {
+                                                                                                                                                            //////    // Once a connection has been made, make a subscription and send a message.
+                                                                                                                                                            //////    //document.getElementById("status_messages").innerHTML = "Connected to " + host + " on port " + port;
+                                                                                                                                                            //////    //console.log("on Connect ");
+                                                                                                                                                            //////    SafeAddToListbox("1. System Is Now Connected!!!!!!!!!!!!!!!!!!");
+                                                                                                                                                            //////    //kpfSubscribe()
+                                                                                                                                                            //////    //function kpfSubscribe() {
+                                                                                                                                                            //////    var soptions = {
+                                                                                                                                                            //////        qos: 1,
+                                                                                                                                                            //////    };
+                                                                                                                                                            //////    //mqtt.subscribe("kenny_fisher/#", soptions);
+                                                                                                                                                            //////    mqtt.subscribe("kenny_fisher/+/*/#", soptions);
+                                                                                                                                                            //////    mqtt.subscribe("kenny_fisher/+/" + UniqueID + "/#", soptions);
+                                                                                                                                                            //////}
 
-                                                //////function disconnectMQTT() {
-                                                //////    try {
-                                                //////        if (mqtt) mqtt.disconnect();
-                                                //////    }
-                                                //////    catch (err) {
 
-                                                //////    }
-                                                //////    try {
-                                                //////        if (mqttFTP) mqttFTP.disconnect();
-                                                //////    }
-                                                //////    catch (err) {
+                                                                                                                                                            ////function onConnected(recon, url) {
+                                                                                                                                                            ////    SafeAddToListbox("2. System Is Now Connected!!!!!!!!!!!!!!!!!!");
+                                                                                                                                                            ////}
+                                                                                                                                                            //////function disconnect() {
+                                                                                                                                                            //////    if (connected_flag == 1)
+                                                                                                                                                            //////        mqtt.disconnect();
+                                                                                                                                                            //////}
 
-                                                //////    }
-                                                //////}
-                                                // === del
-                                                //========= End Of MQTT Objects  ==========================================================
+                                                                                                                                                            //////function onMessageArrived(r_message) {
+                                                                                                                                                            //////    //parseMQTT(r_message);
+                                                                                                                                                            //////}
 
 
-                                                //========= End Of MQTT Objects  ==========================================================
-                                                                                                                                                                                                        ////    $(".imgClass").css({ "top": "0px" });
-                                                                                                                                                                                                            ////    $(".imgClass").css({ "left": "0px" });
-                                                                                                                                                                                                                                                   ////////////////        //var yyy = bytes.length;
+
+                                                                                                                                                            //////function kpfConnect(host, port, clean_sessions) {
+                                                                                                                                                            //////    var clientID = "web" + new Date().getTime();
+                                                                                                                                                            //////    mqtt = new Paho.MQTT.Client(host, port, clientID);
+                                                                                                                                                            //////    var options = {
+                                                                                                                                                            //////        timeout: 3,
+                                                                                                                                                            //////        cleanSession: clean_sessions,
+                                                                                                                                                            //////        onSuccess: onConnect,
+                                                                                                                                                            //////        onFailure: onFailure,
+                                                                                                                                                            //////    };
+                                                                                                                                                            //////    SafeAddToListbox("Got New Client");
+                                                                                                                                                            //////    mqtt.onConnectionLost = onConnectionLost;
+                                                                                                                                                            //////    mqtt.onMessageArrived = onMessageArrived;
+                                                                                                                                                            //////    //mqtt.onConnected = onConnected;
+                                                                                                                                                            //////    ////////////////mqtt.isConnected = onConnected;
+                                                                                                                                                            //////    SafeAddToListbox("Starting mqtt Connect");
+                                                                                                                                                            //////    try {
+                                                                                                                                                            //////        mqtt.connect(options);
+                                                                                                                                                            //////    }
+                                                                                                                                                            //////    catch (err) {
+                                                                                                                                                            //////        SafeAddToListbox("Connect Error: " + err);
+                                                                                                                                                            //////    }
+                                                                                                                                                            //////    return false;
+                                                                                                                                                            //////}
+
+
+
+                                                                                                                                                            //////function KPFSendMessage(topic, msg) {
+                                                                                                                                                            //////    if (mqtt && mqtt.isConnected() == true) {
+                                                                                                                                                            //////        //return;
+                                                                                                                                                            //////        message = new Paho.MQTT.Message(msg);
+                                                                                                                                                            //////        message.destinationName = topic;
+                                                                                                                                                            //////        message.qos = 1;
+                                                                                                                                                            //////        message.retained = false;
+                                                                                                                                                            //////        try {
+                                                                                                                                                            //////            mqtt.send(message);
+                                                                                                                                                            //////        }
+                                                                                                                                                            //////        catch (err) {
+                                                                                                                                                            //////            SafeAddToListbox("mqtt Send Error: " + err);
+                                                                                                                                                            //////        }
+                                                                                                                                                            //////    }
+                                                                                                                                                            //////    else {
+                                                                                                                                                            //////        SafeAddToListbox("101. mqttFTP not connected");
+                                                                                                                                                            //////    }
+                                                                                                                                                            //////}
+
+
+
+                                                                                                                                                            //////function ConnectmqttFtp() {
+                                                                                                                                                            //////    SafeAddToListbox("mqttFTP Starting Connect");
+                                                                                                                                                            //////    var clientID = "web" + new Date().getTime();
+                                                                                                                                                            //////    mqttFTP = new Paho.MQTT.Client(MQTThost, port, clientID);
+
+
+                                                                                                                                                            //////    // ------------------------
+                                                                                                                                                            //////    var dest = "";
+                                                                                                                                                            //////    mqttFTP.onMessageArrived = function (r_message) {
+                                                                                                                                                            //////        SafeAddToListbox("Got ftpresponse Message");
+                                                                                                                                                            //////        var subTopics = r_message.destinationName.split("/");
+                                                                                                                                                            //////        if (callbackArray.length > 0) {
+                                                                                                                                                            //////            for (i = 0; i < callbackArray.length; i++) {
+                                                                                                                                                            //////                if (callbackArray[i].response == r_message.destinationName) {
+                                                                                                                                                            //////                    SafeAddToListbox("Got Match");
+                                                                                                                                                            //////                    var tElement = callbackArray[i];
+                                                                                                                                                            //////                    callbackArray.splice(i, 1);
+                                                                                                                                                            //////                    var bytes = r_message.payloadBytes
+                                                                                                                                                            //////                    tElement.callback(bytes);
+                                                                                                                                                            //////                }
+                                                                                                                                                            //////            }
+                                                                                                                                                            //////        }
+                                                                                                                                                            //////    }
+                                                                                                                                                            //////    var connectOptions = {
+                                                                                                                                                            //////        timeout: 3,
+                                                                                                                                                            //////        cleanSession: true,
+                                                                                                                                                            //////        onSuccess: function (m) {
+                                                                                                                                                            //////            SafeAddToListbox("mqttFTP - In Connect onSuccess: " + mqttFTP.isConnected());
+                                                                                                                                                            //////            var suboptions = {
+                                                                                                                                                            //////                qos: 1,
+                                                                                                                                                            //////                onSuccess: function () {
+                                                                                                                                                            //////                    kennyFisher("mqtt://scrn2.png", function (png) {
+                                                                                                                                                            //////                        if (png.length > 0) {
+                                                                                                                                                            //////                            var t = "data:image/png;base64," + arrayBufferToBase64(png)
+                                                                                                                                                            //////                            fadeNextImage(t);
+                                                                                                                                                            //////                        }
+                                                                                                                                                            //////                    });
+                                                                                                                                                            //////                    SafeAddToListbox("mqttFTP - In Subscribe onSuccess 3 mqttFTP");
+                                                                                                                                                            //////                }
+                                                                                                                                                            //////            };
+                                                                                                                                                            //////            //SafeAddToListbox("Subscribe To ftpresponse");
+                                                                                                                                                            //////            mqttFTP.subscribe("ftpresponse/" + MachineID + "/#", suboptions);
+                                                                                                                                                            //////        },
+                                                                                                                                                            //////        onFailure: function (m) {
+                                                                                                                                                            //////            //SafeAddToListbox("onFailure Error");
+                                                                                                                                                            //////            //console.log("KPF Failure In FTP Connect")
+                                                                                                                                                            //////        },
+                                                                                                                                                            //////    };
+                                                                                                                                                            //////    try {
+                                                                                                                                                            //////        SafeAddToListbox("Starting Connect Process");
+                                                                                                                                                            //////        mqttFTP.onFailure = function () {
+                                                                                                                                                            //////            SafeAddToListbox("mqttFTP Connect Failure");
+                                                                                                                                                            //////        };
+                                                                                                                                                            //////        mqttFTP.onConnectionLost = function (eObj) {
+                                                                                                                                                            //////            SafeAddToListbox("Lost Connection: " + eObj.errorMessage)
+                                                                                                                                                            //////        };
+                                                                                                                                                            //////        mqttFTP.connect(connectOptions);
+                                                                                                                                                            //////    }
+                                                                                                                                                            //////    catch (err) {
+                                                                                                                                                            //////        SafeAddToListbox("Connection ERROR: " + err.message);
+                                                                                                                                                            //////    }
+                                                                                                                                                            //////}
+
+
+
+                                                                                                                                                            ////function GetMQTTFile(fName, callback) {
+                                                                                                                                                            ////    ////if (ftpConnection && ftpConnection.isConnected() == true) {
+
+                                                                                                                                                            ////    ////    if (fName.startsWith("mqtt://")) {
+                                                                                                                                                            ////    ////        fName = fName.substring(7);
+                                                                                                                                                            ////    ////    }
+
+                                                                                                                                                            ////    ////    ftpCounter++;
+                                                                                                                                                            ////    ////    SafeAddToListbox("Get File: " + fName);
+                                                                                                                                                            ////    ////    dest = "ftprequest/" + MachineID + "/" + ftpCounter + "/" + fName;
+
+
+
+                                                                                                                                                            ////    ////    var tEntry = {}
+                                                                                                                                                            ////    ////    tEntry.response = "ftpresponse/" + MachineID + "/" + ftpCounter + "/" + fName;
+                                                                                                                                                            ////    ////    tEntry.callback = callback;
+                                                                                                                                                            ////    ////    callbackArray.push(tEntry);
+
+
+                                                                                                                                                            ////    ////    SafeAddToListbox("Sent: " + dest);
+                                                                                                                                                            ////    ////    message.destinationName = dest;
+                                                                                                                                                            ////    ////    message.qos = 1;
+                                                                                                                                                            ////    ////    message.retained = false;
+                                                                                                                                                            ////    ////    try {
+                                                                                                                                                            ////    ////        mqttFTP.send(message);
+                                                                                                                                                            ////    ////    }
+                                                                                                                                                            ////    ////    catch (err) {
+                                                                                                                                                            ////    ////        SafeAddToListbox("mqttFTP Send Error: " + err);
+                                                                                                                                                            ////    ////    }
+                                                                                                                                                            ////    ////}
+                                                                                                                                                            ////    ////else {
+                                                                                                                                                            ////    ////    SafeAddToListbox("1. mqttFTP not connected");
+                                                                                                                                                            ////    ////}
+                                                                                                                                                            ////}
+
+
+
+
+
+                                                                                                                                                            //////function disconnectMQTT() {
+                                                                                                                                                            //////    try {
+                                                                                                                                                            //////        if (mqtt) mqtt.disconnect();
+                                                                                                                                                            //////    }
+                                                                                                                                                            //////    catch (err) {
+
+                                                                                                                                                            //////    }
+                                                                                                                                                            //////    try {
+                                                                                                                                                            //////        if (mqttFTP) mqttFTP.disconnect();
+                                                                                                                                                            //////    }
+                                                                                                                                                            //////    catch (err) {
+
+                                                                                                                                                            //////    }
+                                                                                                                                                            //////}
+                                                                                                                                                            // === del
+                                                                                                                                                            //========= End Of MQTT Objects  ==========================================================
+
+
+                                                                                                                                                            //========= End Of MQTT Objects  ==========================================================
+                                                                                                                                                                                                                                                                                                                    ////    $(".imgClass").css({ "top": "0px" });
+                                                                                                                                                                                                                                                                                                                        ////    $(".imgClass").css({ "left": "0px" });
+                                                                                                                                                                                                                                                                                                                                                               ////////////////        //var yyy = bytes.length;
 
 
             /*
@@ -2831,7 +3145,7 @@
                         });
 
             */
-                                                                                                                                                                                                            //	saySomething("Mu ha ha! Works now.");
+                                                                                                                                                                                                                                                                                                                        //	saySomething("Mu ha ha! Works now.");
 
 
 
@@ -2900,11 +3214,11 @@
                        return false;
                    }
            */
-                                                                                                                                                                                                            ////if (preferences.fullscreen) {
+                                                                                                                                                                                                                                                                                                                        ////if (preferences.fullscreen) {
 
-                                                                                                                                                               ////    $(".imgClass").css({ "width": "100%" });
-                                                                                                                                                                                                            ////    $(".imgClass").css({ "height": "100%" });
-                                                                                                                                                                                                            ////}
+                                                                                                                                                                                                                                                                           ////    $(".imgClass").css({ "width": "100%" });
+                                                                                                                                                                                                                                                                                                                        ////    $(".imgClass").css({ "height": "100%" });
+                                                                                                                                                                                                                                                                                                                        ////}
 
         </script>
     </div>
